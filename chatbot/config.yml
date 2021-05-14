@@ -1,0 +1,56 @@
+# Configuration for Rasa NLU.
+# https://rasa.com/docs/rasa/nlu/components/
+language: es
+
+#pipeline:
+#  - name: WhitespaceTokenizer
+#  - name: RegexFeaturizer
+#  - name: LexicalSyntacticFeaturizer
+#  - name: CountVectorsFeaturizer
+#  - name: CountVectorsFeaturizer
+#    analyzer: char_wb
+#    min_ngram: 1
+#    max_ngram: 4
+#  - name: DIETClassifier
+#    epochs: 100
+#    constrain_similarities: true
+#  - name: EntitySynonymMapper
+#  - name: ResponseSelector
+#    epochs: 100
+#    constrain_similarities: true
+#  - name: FallbackClassifier
+#    threshold: 0.3
+#    ambiguity_threshold: 0.1
+#  - name: RegexEntityExtractor
+pipeline:
+- name: "preprocessing.TitleUtterance"
+- name: SpacyNLP
+  model: "es_core_news_lg"
+- name: SpacyTokenizer
+- name: RegexFeaturizer
+- name: CountVectorsFeaturizer
+- name: CountVectorsFeaturizer
+  analyzer: char_wb
+  min_ngram: 1
+  max_ngram: 4
+- name: SpacyFeaturizer
+  pooling: mean
+- name: SpacyEntityExtractor
+  dimensions: ["PER", "LOC"]
+- name: DucklingHTTPExtractor
+  url: http://0.0.0.0:8000
+  dimensions: ["time", "amount-of-money", "distance", "number"]
+  locale: es_ES
+- name: DIETClassifier
+  epochs: 100
+- name: RegexEntityExtractor
+
+# Configuration for Rasa Core.
+# https://rasa.com/docs/rasa/core/policies/
+policies:
+  - name: MemoizationPolicy
+  - name: TEDPolicy
+    max_history: 5
+    epochs: 100
+    constrain_similarities: true
+  - name: RulePolicy

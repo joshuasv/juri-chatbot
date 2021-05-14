@@ -1,0 +1,9 @@
+.signatureBtn {
+  margin-right: 5px;
+  position: relative;
+  left: 10px;
+  top: 5px;
+  width: 80px;
+  height: 25px;
+  size: 10px;
+}

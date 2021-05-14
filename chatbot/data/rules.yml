@@ -1,0 +1,30 @@
+version: "2.0"
+
+rules:
+  
+  - rule: start conversation
+    conversation_start: true
+    steps:
+    - intent: greet
+    - action: utter_greet
+    - action: utter_start_form
+
+  - rule: activate form
+    steps:
+    - action: utter_start_form
+    - intent: affirm
+    - action: action_create_contract
+    - action: contract_form
+    - active_loop: contract_form
+
+  - rule: submit form
+    condition:
+    - active_loop: contract_form
+    steps:
+    - action: contract_form
+    - active_loop: null
+    - slot_was_set:
+      - requested_slot: null
+    - action: action_submit_form 
+
+

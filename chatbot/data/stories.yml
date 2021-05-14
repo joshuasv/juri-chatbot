@@ -1,0 +1,16 @@
+version: "2.0"
+
+stories:
+
+- story: form happy path
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - action: utter_start_form
+  - intent: affirm
+  - action: action_create_contract
+  - action: contract_form
+  - active_loop: contract_form
+  - active_loop: null
+  - action: action_submit_form 
+  

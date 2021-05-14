@@ -1,0 +1,156 @@
+version: "2.0"
+
+intents:
+  - greet
+  - affirm
+  - reply_name
+  - reply_dni
+  - reply_province
+  - reply_vehicle_brand
+  - reply_vehicle_plate
+  - reply_vehicle_chassis_nb
+#  - reply_vehicle_kms
+#  - reply_vehicle_value
+
+entities:
+  - PER
+  - LOC
+  - dni
+  - province
+  - brand
+  - plate 
+  - chassis_nb
+  - number
+  - amount-of-money
+  - distance
+  - time
+
+slots:
+  contract_id:
+    type: text
+    influence_conversation: false
+  vendor_name:
+    type: text
+    influence_conversation: false
+  vendor_dni:
+    type: text
+    influence_conversation: false
+  vendor_address:
+    type: text
+    influence_conversation: false
+  vendor_province:
+    type: text
+    influence_conversation: false
+  buyer_name:
+    type: text
+    influence_conversation: false
+  buyer_dni:
+    type: text
+    influence_conversation: false
+  buyer_address:
+    type: text
+    influence_conversation: false
+  buyer_province:
+    type: text 
+    influence_conversation: false
+  vehicle_brand:
+    type: text
+    influence_conversation: false
+  vehicle_plate:
+    type: text
+    influence_conversation: false
+  vehicle_chassis_nb:
+    type: text
+    influence_conversation: false
+  vehicle_kms:
+    type: text
+    influence_conversation: false
+  vehicle_value:
+    type: text
+    influence_conversation: false
+  insurance_date:
+    type: text
+    influence_conversation: false
+  court:
+    type: text
+    influence_conversation: false
+  vendor_signature:
+    type: text
+    influence_conversation: false
+  buyer_signature:
+    type: text
+    influence_conversation: false
+
+responses:
+  utter_greet:
+  - text: "¡Hola! Soy un bot que ayuda a crear contratos de compraventa para vehículos."
+  utter_start_form:
+  - text: "¿Empezamos? Tan solo tardaremos unos minutos"
+  utter_ask_contract_form_vendor_name:
+  - text: "¿Cuál es el nombre completo del vendedor?"
+  utter_ask_contract_form_vendor_dni:
+  - text: "¿Cómo es el D.N.I. del vendedor?"
+  utter_ask_contract_form_vendor_address:
+  - text: "¿Cuál es la dirección del vendedor?"
+  utter_ask_contract_form_vendor_province:
+  - text: "¿En qué provincia vive el vendedor?"
+  utter_ask_contract_form_buyer_name:
+  - text: "¿Cuál es el nombre completo del comprador?"
+  utter_ask_contract_form_buyer_dni:
+  - text: "¿Cómo es el D.N.I. del comprador?"
+  utter_ask_contract_form_buyer_address:
+  - text: "¿Cuál es la dirección del comprador?"
+  utter_ask_contract_form_buyer_province:
+  - text: "¿En qué provincia vive el comprador?"
+  utter_ask_contract_form_vehicle_brand:
+  - text: "¿Cuál es la marca del vehículo a vender?"
+  utter_ask_contract_form_vehicle_plate:
+  - text: "¿Cómo es la matrícula del vehículo a vender?"
+  utter_ask_contract_form_vehicle_chassis_nb:
+  - text: "¿Cuál es el número de bastidor del vehículo a vender?"
+  utter_ask_contract_form_vehicle_kms:
+  - text: "¿Cuántos kilómetros tiene el vehículo a vender?"
+  utter_ask_contract_form_vehicle_value:
+  - text: "¿Por cuántos Euros se va a vender el vehículo?"
+  utter_ask_contract_form_insurance_date:
+  - text: "¿Hasta que fecha es válido el seguro?"
+  utter_ask_contract_form_court:
+  - text: "¿A qué Juzgados y Tribunales estarán sometidas ambas partes?"
+  utter_ask_contract_form_vendor_signature:
+  - text: "Firma del vendedor"
+    custom:
+      signature: True
+  utter_ask_contract_form_buyer_signature:
+  - text: "Firma del comprador" 
+    custom:
+      signature: True
+  utter_slots_values: 
+  - text: |- 
+      """
+      Este es la información para el  contrato #{contract_id}:
+       - Vendedor: {vendor_name} {vendor_dni} {vendor_address} {vendor_province}
+       - Comprador: {buyer_name} {buyer_dni} {buyer_address} {buyer_province}
+       - Vehículo: {vehicle_brand} {vehicle_plate} {vehicle_chassis_nb} {vehicle_kms} {vehicle_value}
+       - Seguro hasta la fecha: {insurance_date} 
+       - Tribunal litigios: {court}
+       - Vendor signature: {vendor_signature}
+       - Buyer signature: {buyer_signature}
+      """
+actions:
+  - utter_start_form
+  - validate_contract_form
+  - action_create_contract
+  - action_submit_form
+
+forms:
+  contract_form:
+    court:
+      - type: from_text
+    vendor_signature:
+      - type: from_text
+    buyer_signature:
+      - type: from_text
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
