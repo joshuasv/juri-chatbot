@@ -1,0 +1,12 @@
+.env/bin/python api/manage.py runserver 8001 &
+
+cd ./chatbot
+
+../.env/bin/rasa run --enable-api --cors "*" &
+../.env/bin/rasa run actions &
+
+cd ./duckling
+stack exec duckling-example-exe
+
+
+
