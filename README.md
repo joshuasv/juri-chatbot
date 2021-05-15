@@ -21,6 +21,7 @@
     
 2. Ejecutar el fichero
     `./Run`
+3. Dirigirse a http://localhost:8001
     
 **NOTA** 
 
