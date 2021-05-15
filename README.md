@@ -22,7 +22,9 @@
 2. Ejecutar el fichero
     `./Run`
     
-**NOTA** A la hora de matar los procesos puede que alguno persista y siga escuchando en un determinado puerto. Algunos comandos que peuden resultar de ayuda son:
+**NOTA** 
+
+A la hora de matar los procesos puede que alguno persista y siga escuchando en un determinado puerto. Algunos comandos que peuden resultar de ayuda son:
 
 `ss -ltn` Muestra que puertos estan a la escucha
 
