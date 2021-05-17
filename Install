@@ -5,3 +5,5 @@ python3 -m venv .env
 .env/bin/python -m pip install cython
 .env/bin/python -m pip install numpy 
 .env/bin/python -m pip install -r requirements.txt 
+
+sudo docker load < ./chatbot/duckling-server.tar 

@@ -31,6 +31,8 @@ A la hora de matar los procesos puede que alguno persista y siga escuchando en u
 
 ``sudo kill -9 `sudo lsof -t -i:PORT` `` Mata a un proceso escuchando en un determinado puerto
 
+Puertos que usa la aplicación: `5005`, `5055`, `8000`, y `8001`
+
 
 
 ## 📜 Licencia
