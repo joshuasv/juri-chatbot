@@ -5,5 +5,5 @@ cd ./chatbot
 ../.env/bin/rasa run --enable-api --cors "*" &
 ../.env/bin/rasa run actions &
 
-sudo docker run -p 8000:8000 duckling:Dockerfile
+docker run -p 8000:8000 duckling:Dockerfile
 
