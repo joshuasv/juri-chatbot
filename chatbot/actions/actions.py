@@ -3,10 +3,7 @@
 
 import json
 import requests
-import unidecode
 import datetime
-
-from .contract import Contract
 
 from typing import Any, Text, Dict, List, Optional
 
