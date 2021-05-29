@@ -225,6 +225,12 @@
                 if (xhr.readyState == XMLHttpRequest.DONE) {
                   response = JSON.parse(xhr.responseText);
 
+                  // Request the slots information 
+                  xhr_slots.open("GET", url_slots, true);
+                  xhr_slots.setRequestHeader("Content-Type", "application/json");
+                  xhr_slots.send();
+
+
                   var answers = [];
                   var re = [];
 
@@ -276,10 +282,6 @@
               xhr.open("POST", url, true);
               xhr.setRequestHeader("Content-Type", "application/json");
               xhr.send(JSON.stringify(request_body));
-              
-              xhr_slots.open("GET", url_slots, true);
-              xhr_slots.setRequestHeader("Content-Type", "application/json");
-              xhr_slots.send();
             };
 
             var found = false;
