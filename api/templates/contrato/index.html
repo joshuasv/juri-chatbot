@@ -34,29 +34,32 @@
     
     <div class="sidenav">
       <div class="child">
-        <p><b>Comprador</b></p>
-        <p>[Nombre] José Fernández Fernández</p>
-        <p>[DNI] José Fernández Fernández</p>
-        <p>[Dirección] José Fernández Fernández</p>
-        <p>[Provincia] José Fernández Fernández</p>
+        <p><b>Vendedor</b></p>
+        <p id="vendor_name">[Nombre] <i>Vacío...</i></p>
+        <p id="vendor_dni">[DNI] <i>Vacío...</i></p>
+        <p id="vendor_address">[Dirección] <i>Vacío...</i></p>
+        <p id="vendor_province">[Provincia] <i>Vacío...</i></p>
       </div>
       <div class="child">
-        <p><b>Vendedor</b></p>
-        <p>[Nombre] José Fernández Fernández</p>
-        <p>[DNI] José Fernández Fernández</p>
-        <p>[Dirección] José Fernández Fernández</p>
-        <p>[Provincia] José Fernández Fernández</p>
+        <p><b>Comprador</b></p>
+        <p id="buyer_name">[Nombre] <i>Vacío...</i></p>
+        <p id="buyer_dni">[DNI] <i>Vacío...</i></p>
+        <p id="buyer_address">[Dirección] <i>Vacío...</i></p>
+        <p id="buyer_province">[Provincia] <i>Vacío...</i></p>
       </div>
       <div class="child">
         <p><b>Vehículo</b></p>
-        <p>[Marca] José Fernández Fernández</p>
-        <p>[Matrícula] José Fernández Fernández</p>
-        <p>[Nº bastidor] José Fernández Fernández</p>
-        <p>[Kilómetros] José Fernández Fernández</p>
-        <p>[Fecha seguro] José Fernández Fernández</p>
-        <p>[Precio] José Fernández Fernández</p>
+        <p id="vehicle_brand">[Marca] <i>Vacío...</i></p>
+        <p id="vehicle_plate">[Matrícula] <i>Vacío...</i></p>
+        <p id="vehicle_chassis_nb">[Nº Bastidor] <i>Vacío...</i></p>
+        <p id="vehicle_kms">[Kilómetros] <i>Vacío...</i></p>
+        <p id="vehicle_value">[Precio] <i>Vacío...</i></p>
+        <p id="insurance_date">[Fecha seguro] <i>Vacío...</i></p>
       </div>
-      <div class="child">hola</div>
+      <div class="child">
+        <p><b>Legal</b></p>
+        <p id="court">[Juzgados Y Tribunales] <i>Vacío...</i></p>
+      </div>
     </div>
 
     <!-- container element for chat window -->
@@ -100,6 +103,15 @@
           subtree: true
         });
       }
+
+      var buyer_name = null;
+      var buyer_address = null;
+      var buyer_dni = null;
+      var buyer_province = null;
+      var vendor_name = null;
+      var vendor_address = null;
+      var vendor_dni = null;
+      var vendor_province = null;
       
       var cont = 0;
 
@@ -121,7 +133,9 @@
           inputCallbackFn: function (chatObject) {
             var miss = function (text_inp = null) {
               var xhr = new XMLHttpRequest();
+              var xhr_slots = new XMLHttpRequest();
               var url = base_url + "/webhooks/rest/webhook";
+              var url_slots = base_url + "/conversations/"+client_id+"/tracker";
 
               var input = false;
               if (text_inp) {
@@ -135,9 +149,78 @@
                 sender: client_id,
                 message: input,
               };
-              
-              console.log("[CHAT_OBJ]" + JSON.stringify(chatObject));
 
+              xhr_slots.onreadystatechange = function () {
+                if (xhr_slots.readyState == XMLHttpRequest.DONE) {
+                  slots = JSON.parse(xhr_slots.responseText).slots;
+                  console.log(slots);
+                  
+                  // Set the values 
+                  if (slots.vendor_name !== null) {
+                    var text = document.getElementById("vendor_name");
+                    text.innerHTML = "[Nombre] " + slots.vendor_name;
+                  }
+                  if (slots.vendor_dni !== null) {
+                    var text = document.getElementById("vendor_dni");
+                    text.innerHTML = "[DNI] " + slots.vendor_dni;
+                  }
+                  if (slots.vendor_address !== null) {
+                    var text = document.getElementById("vendor_address");
+                    text.innerHTML = "[Dirección] " + slots.vendor_address;
+                  }
+                  if (slots.vendor_province !== null) {
+                    var text = document.getElementById("vendor_province");
+                    text.innerHTML = "[Provincia] " + slots.vendor_province;
+                  }
+                  if (slots.buyer_name !== null) {
+                    var text = document.getElementById("buyer_name");
+                    text.innerHTML = "[Nombre] " + slots.buyer_name;
+                  }
+                  if (slots.buyer_dni !== null) {
+                    var text = document.getElementById("buyer_dni");
+                    text.innerHTML = "[DNI] " + slots.buyer_dni;
+                  }
+                  if (slots.buyer_address !== null) {
+                    var text = document.getElementById("buyer_address");
+                    text.innerHTML = "[Dirección] " + slots.buyer_address;
+                  }
+                  if (slots.buyer_province !== null) {
+                    var text = document.getElementById("buyer_province");
+                    text.innerHTML = "[Provincia] " + slots.buyer_province;
+                  }
+                  if (slots.vehicle_brand !== null) {
+                    var text = document.getElementById("vehicle_brand");
+                    text.innerHTML = "[Marca] " + slots.vehicle_brand;
+                  }
+                  if (slots.vehicle_plate !== null) {
+                    var text = document.getElementById("vehicle_plate");
+                    text.innerHTML = "[Matrícula] " + slots.vehicle_plate;
+                  }
+                  if (slots.vehicle_chassis_nb !== null) {
+                    var text = document.getElementById("vehicle_chassis_nb");
+                    text.innerHTML = "[Nº Bastidor] " + slots.vehicle_chassis_nb;
+                  }
+                  if (slots.vehicle_kms !== null) {
+                    var text = document.getElementById("vehicle_kms");
+                    text.innerHTML = "[Kilómetros] " + slots.vehicle_kms;
+                  }
+                  if (slots.vehicle_value !== null) {
+                    var text = document.getElementById("vehicle_value");
+                    text.innerHTML = "[Precio venta] " + slots.vehicle_value;
+                  }
+                  if (slots.insurance_date !== null) {
+                    var text = document.getElementById("insurance_date");
+
+                    text.innerHTML = "[Fecha seguro] " + slots.insurance_date;
+                  }
+                  if (slots.court !== null) {
+                    var text = document.getElementById("court");
+
+                    text.innerHTML = "[Juzgados Y Tribunales] " + slots.court;
+                  }
+                }
+              };
+              
               xhr.onreadystatechange = function () {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
                   response = JSON.parse(xhr.responseText);
@@ -190,10 +273,13 @@
                   );
                 }
               };
-
               xhr.open("POST", url, true);
               xhr.setRequestHeader("Content-Type", "application/json");
               xhr.send(JSON.stringify(request_body));
+              
+              xhr_slots.open("GET", url_slots, true);
+              xhr_slots.setRequestHeader("Content-Type", "application/json");
+              xhr_slots.send();
             };
 
             var found = false;
