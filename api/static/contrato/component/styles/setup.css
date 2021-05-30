@@ -42,10 +42,10 @@ body {
   left: 0;
   background-color: #9970f5; 
   overflow-x: hidden; 
-  padding-top: 20px;
+  padding-top: 0px;
   display: flex;
   flex-flow: column nowrap;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .child {
@@ -54,4 +54,18 @@ body {
   font-size: 14px;
   width: auto; 
   height: auto;
+}
+
+.editBtn {
+  height: auto;
+  width: auto;
+  margin-right: 10px;
+}
+
+.slot {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: baseline;
+  margin: 0;
 }

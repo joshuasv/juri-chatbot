@@ -27,38 +27,138 @@
         margin: 0;
         width: calc(100% - 30px);
       }
+
+      .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 2; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+      }
+
+      /* Modal Content/Box */
+      .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 50%; /* Could be more or less, depending on screen size */
+      }
+
+      /* The Close Button */
+      .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+      }
+
+      .close:hover, .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      
+      #inputSlotVal {
+        width: 60%;
+        height: 25px;
+      }
     </style>
+
   </head>
 
   <body>
+
+    <div id="modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="modalHeaderText"></h3>
+        </div>
+        <br>
+        <div class="modal-body">
+          <input type="text" id="inputSlotVal" name="change" /> 
+        </div>
+        <br><br>
+        <div class="modal-footer">
+          <button id="btnCancel">Cancelar</button>
+          <button id="btnSave">Guardar</button>
+        </div>
+      </div>
+    </div>
     
     <div class="sidenav">
       <div class="child">
         <p><b>Vendedor</b></p>
-        <p id="vendor_name">[Nombre] <i>Vacío...</i></p>
-        <p id="vendor_dni">[DNI] <i>Vacío...</i></p>
+        <div class="slot">
+          <div><button id="editBtn" class="editBtn" onClick="edit('vendor_name')">Editar</button></div>
+          <div><p id="vendor_name">[Nombre] <i>Vacío...</i></p></div>
+        </div>
+        <div class="slot">
+          <div><button id="editBtn" class="editBtn" onClick="edit('vendor_dni')">Editar</button></div>
+          <p id="vendor_dni">[DNI] <i>Vacío...</i></p>
+        </div>
+        <div class="slot">
+          <div><button id="editBtn" class="editBtn" onClick="edit('vendor_address')">Editar</button></div>
         <p id="vendor_address">[Dirección] <i>Vacío...</i></p>
+        </div>
+        <div class="slot">
+          <div><button id="editBtn" class="editBtn" onClick="edit('vendor_province')">Editar</button></div>
         <p id="vendor_province">[Provincia] <i>Vacío...</i></p>
+        </div>
       </div>
       <div class="child">
         <p><b>Comprador</b></p>
-        <p id="buyer_name">[Nombre] <i>Vacío...</i></p>
+        <div class="slot">
+          <div><button id="editBtn" class="editBtn" onClick="edit('buyer_dni')">Editar</button></div>
         <p id="buyer_dni">[DNI] <i>Vacío...</i></p>
+        </div>
+        <div class="slot">
+          <div><button id="editBtn" class="editBtn" onClick="edit('buyer_address')">Editar</button></div>
         <p id="buyer_address">[Dirección] <i>Vacío...</i></p>
+        </div>
+        <div class="slot">
+          <div><button id="editBtn" class="editBtn" onClick="edit('buyer_province')">Editar</button></div>
         <p id="buyer_province">[Provincia] <i>Vacío...</i></p>
+        </div>
       </div>
       <div class="child">
         <p><b>Vehículo</b></p>
+        <div class="slot">
+          <div><button id="editBtn" class="editBtn" onClick="edit('vehicle_brand')">Editar</button></div>
         <p id="vehicle_brand">[Marca] <i>Vacío...</i></p>
+        </div>
+        <div class="slot">
+          <div><button id="editBtn" class="editBtn" onClick="edit('vehicle_plate')">Editar</button></div>
         <p id="vehicle_plate">[Matrícula] <i>Vacío...</i></p>
+        </div>
+        <div class="slot">
+          <div><button id="editBtn" class="editBtn" onClick="edit('vehicle_chassis_nb')">Editar</button></div>
         <p id="vehicle_chassis_nb">[Nº Bastidor] <i>Vacío...</i></p>
+        </div>
+        <div class="slot">
+          <div><button id="editBtn" class="editBtn" onClick="edit('vehicle_kms')">Editar</button></div>
         <p id="vehicle_kms">[Kilómetros] <i>Vacío...</i></p>
+        </div>
+        <div class="slot">
+          <div><button id="editBtn" class="editBtn" onClick="edit('vehicle_value')">Editar</button></div>
         <p id="vehicle_value">[Precio] <i>Vacío...</i></p>
+        </div>
+        <div class="slot">
+          <div><button id="editBtn" class="editBtn" onClick="edit('insurance_date')">Editar</button></div>
         <p id="insurance_date">[Fecha seguro] <i>Vacío...</i></p>
+        </div>
       </div>
       <div class="child">
         <p><b>Legal</b></p>
+        <div class="slot">
+          <div><button id="editBtn" class="editBtn" onClick="edit('court')">Editar</button></div>
         <p id="court">[Juzgados Y Tribunales] <i>Vacío...</i></p>
+        </div>
       </div>
     </div>
 
@@ -103,15 +203,6 @@
           subtree: true
         });
       }
-
-      var buyer_name = null;
-      var buyer_address = null;
-      var buyer_dni = null;
-      var buyer_province = null;
-      var vendor_name = null;
-      var vendor_address = null;
-      var vendor_dni = null;
-      var vendor_province = null;
       
       var cont = 0;
 
@@ -120,6 +211,124 @@
 
       //A unique client id so that the data doesn't get mismatched
       var client_id = makeid();
+
+      function getTextModalHeader(slot) {
+        var baseString = "¿Quieres cambiar";
+        
+        if (slot === "vendor_name") {
+          return baseString + " el nombre del vendedor?";
+        }
+        else if (slot === "vendor_address") {
+          return baseString + " la dirección del vendedor?";
+        }
+        else if (slot === "vendor_dni") {
+          return baseString + " el DNI del vendedor?";
+        }
+        else if (slot === "vendor_province") {
+          return baseString + " la provincia del vendedor?";
+        }
+        else if (slot === "buyer_name") {
+          return baseString + " el nombre del comprador?";
+        }
+        else if (slot === "buyer_address") {
+          return baseString + " la dirección del comprador?";
+        }
+        else if (slot === "buyer_dni") {
+          return baseString + " el DNI del comprador?";
+        }
+        else if (slot === "buyer_province") {
+          return baseString + " la provincia del comprador?";
+        }
+        else if (slot === "vehicle_brand") {
+          return baseString + " la marca del vehículo?";
+        }
+        else if (slot === "vehicle_plate") {
+          return baseString + " la matrícula del vehículo?";
+        }
+        else if (slot === "vehicle_chassis_nb") {
+          return baseString + " el número de bastidor del vehículo?";
+        }
+        else if (slot === "vehicle_kms") {
+          return baseString + " los kilómetros del vehículo?";
+        }
+        else if (slot === "vehicle_value") {
+          return baseString + " el precio del vehículo?";
+        }
+        else if (slot === "insurance_date") {
+          return baseString + " la fecha del seguro?";
+        }
+        else if (slot === "court") {
+          return baseString + " los Tribunales y Juzgados?";
+        }
+        else {
+          return "¿Seguro que quieres cambiar ese campo?";
+        }
+      }
+      function updateSlotsInfo(slots) {
+        // Set the values 
+        if (slots.vendor_name !== null) {
+          var text = document.getElementById("vendor_name");
+          text.innerHTML = "[Nombre] " + slots.vendor_name;
+        }
+        if (slots.vendor_dni !== null) {
+          var text = document.getElementById("vendor_dni");
+          text.innerHTML = "[DNI] " + slots.vendor_dni;
+        }
+        if (slots.vendor_address !== null) {
+          var text = document.getElementById("vendor_address");
+          text.innerHTML = "[Dirección] " + slots.vendor_address;
+        }
+        if (slots.vendor_province !== null) {
+          var text = document.getElementById("vendor_province");
+          text.innerHTML = "[Provincia] " + slots.vendor_province;
+        }
+        if (slots.buyer_name !== null) {
+          var text = document.getElementById("buyer_name");
+          text.innerHTML = "[Nombre] " + slots.buyer_name;
+        }
+        if (slots.buyer_dni !== null) {
+          var text = document.getElementById("buyer_dni");
+          text.innerHTML = "[DNI] " + slots.buyer_dni;
+        }
+        if (slots.buyer_address !== null) {
+          var text = document.getElementById("buyer_address");
+          text.innerHTML = "[Dirección] " + slots.buyer_address;
+        }
+        if (slots.buyer_province !== null) {
+          var text = document.getElementById("buyer_province");
+          text.innerHTML = "[Provincia] " + slots.buyer_province;
+        }
+        if (slots.vehicle_brand !== null) {
+          var text = document.getElementById("vehicle_brand");
+          text.innerHTML = "[Marca] " + slots.vehicle_brand;
+        }
+        if (slots.vehicle_plate !== null) {
+          var text = document.getElementById("vehicle_plate");
+          text.innerHTML = "[Matrícula] " + slots.vehicle_plate;
+        }
+        if (slots.vehicle_chassis_nb !== null) {
+          var text = document.getElementById("vehicle_chassis_nb");
+          text.innerHTML = "[Nº Bastidor] " + slots.vehicle_chassis_nb;
+        }
+        if (slots.vehicle_kms !== null) {
+          var text = document.getElementById("vehicle_kms");
+          text.innerHTML = "[Kilómetros] " + slots.vehicle_kms;
+        }
+        if (slots.vehicle_value !== null) {
+          var text = document.getElementById("vehicle_value");
+          text.innerHTML = "[Precio venta] " + slots.vehicle_value;
+        }
+        if (slots.insurance_date !== null) {
+          var text = document.getElementById("insurance_date");
+
+          text.innerHTML = "[Fecha seguro] " + slots.insurance_date;
+        }
+        if (slots.court !== null) {
+          var text = document.getElementById("court");
+
+          text.innerHTML = "[Juzgados Y Tribunales] " + slots.court;
+        }
+      }      
 
       var chatWindow = new Bubbles(
         document.getElementById("chat"),
@@ -153,71 +362,7 @@
               xhr_slots.onreadystatechange = function () {
                 if (xhr_slots.readyState == XMLHttpRequest.DONE) {
                   slots = JSON.parse(xhr_slots.responseText).slots;
-                  console.log(slots);
-                  
-                  // Set the values 
-                  if (slots.vendor_name !== null) {
-                    var text = document.getElementById("vendor_name");
-                    text.innerHTML = "[Nombre] " + slots.vendor_name;
-                  }
-                  if (slots.vendor_dni !== null) {
-                    var text = document.getElementById("vendor_dni");
-                    text.innerHTML = "[DNI] " + slots.vendor_dni;
-                  }
-                  if (slots.vendor_address !== null) {
-                    var text = document.getElementById("vendor_address");
-                    text.innerHTML = "[Dirección] " + slots.vendor_address;
-                  }
-                  if (slots.vendor_province !== null) {
-                    var text = document.getElementById("vendor_province");
-                    text.innerHTML = "[Provincia] " + slots.vendor_province;
-                  }
-                  if (slots.buyer_name !== null) {
-                    var text = document.getElementById("buyer_name");
-                    text.innerHTML = "[Nombre] " + slots.buyer_name;
-                  }
-                  if (slots.buyer_dni !== null) {
-                    var text = document.getElementById("buyer_dni");
-                    text.innerHTML = "[DNI] " + slots.buyer_dni;
-                  }
-                  if (slots.buyer_address !== null) {
-                    var text = document.getElementById("buyer_address");
-                    text.innerHTML = "[Dirección] " + slots.buyer_address;
-                  }
-                  if (slots.buyer_province !== null) {
-                    var text = document.getElementById("buyer_province");
-                    text.innerHTML = "[Provincia] " + slots.buyer_province;
-                  }
-                  if (slots.vehicle_brand !== null) {
-                    var text = document.getElementById("vehicle_brand");
-                    text.innerHTML = "[Marca] " + slots.vehicle_brand;
-                  }
-                  if (slots.vehicle_plate !== null) {
-                    var text = document.getElementById("vehicle_plate");
-                    text.innerHTML = "[Matrícula] " + slots.vehicle_plate;
-                  }
-                  if (slots.vehicle_chassis_nb !== null) {
-                    var text = document.getElementById("vehicle_chassis_nb");
-                    text.innerHTML = "[Nº Bastidor] " + slots.vehicle_chassis_nb;
-                  }
-                  if (slots.vehicle_kms !== null) {
-                    var text = document.getElementById("vehicle_kms");
-                    text.innerHTML = "[Kilómetros] " + slots.vehicle_kms;
-                  }
-                  if (slots.vehicle_value !== null) {
-                    var text = document.getElementById("vehicle_value");
-                    text.innerHTML = "[Precio venta] " + slots.vehicle_value;
-                  }
-                  if (slots.insurance_date !== null) {
-                    var text = document.getElementById("insurance_date");
-
-                    text.innerHTML = "[Fecha seguro] " + slots.insurance_date;
-                  }
-                  if (slots.court !== null) {
-                    var text = document.getElementById("court");
-
-                    text.innerHTML = "[Juzgados Y Tribunales] " + slots.court;
-                  }
+                  updateSlotsInfo(slots);
                 }
               };
               
@@ -368,6 +513,67 @@
       };
 
       chatWindow.talk(convo);
+    </script>
+
+    <script>
+      var slot = null;
+      var modal = document.getElementById("modal");
+      var btnCancel = document.getElementById("btnCancel");
+      var btnSave = document.getElementById("btnSave");
+
+      function edit(slotName) {
+        modal.style.display = "block";
+        slot = slotName;
+        var modalHeaderText = document.getElementById("modalHeaderText");
+        modalHeaderText.innerHTML = getTextModalHeader(slot); 
+      }
+
+      btnCancel.onclick = function() {
+        modal.style.display = "none";
+      }
+
+      btnSave.onclick = function() {
+        
+        var xhr = new XMLHttpRequest();
+        var url = base_url + "/conversations/"+client_id+"/tracker/events?include_events=NONE";
+        var slotInput = document.getElementById("inputSlotVal");
+        var request_body = {
+          "event": "slot",
+          "name": slot,
+          "value": slotInput.value,
+          "timestamp": 0}
+        ;
+        
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState == XMLHttpRequest.DONE) {
+          
+            var xhr_slots = new XMLHttpRequest();
+            var url_slots = base_url + "/conversations/"+client_id+"/tracker";
+            xhr_slots.onreadystatechange = function () {
+              if (xhr_slots.readyState == XMLHttpRequest.DONE) {
+                slots = JSON.parse(xhr_slots.responseText).slots;
+                updateSlotsInfo(slots);
+                modal.style.display = "none";
+                slotInput.value = ""; 
+              }
+            };
+            xhr_slots.open("GET", url_slots, true);
+            xhr_slots.setRequestHeader("Content-Type", "application/json");
+            xhr_slots.send();
+          }
+        };
+        
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(JSON.stringify(request_body));
+      }
+
+      // When the user clicks anywhere outside of the modal, close it
+      window.onclick = function(event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      }
     </script>
   </body>
 </html>
