@@ -4,6 +4,7 @@
 import json
 import requests
 import datetime
+import editdistance
 
 from typing import Any, Text, Dict, List, Optional
 
@@ -113,22 +114,24 @@ class ValidateContractForm(FormValidationAction):
     
     #print("[SLOTS]", tracker.slots)
     #print("[LAST_MSG]", tracker.latest_message)
-    extra = [
-      "vendor_name", 
-      "vendor_dni",
-      "vendor_address", 
-      "vendor_province",
-      "buyer_name",
-      "buyer_dni",
-      "buyer_address",
-      "buyer_province",
-      "vehicle_brand",
-      "vehicle_plate",
-      "vehicle_chassis_nb",
-      "vehicle_kms",
-      "vehicle_value",
-      "insurance_date"
-    ]
+    #extra = [
+    #  "vendor_name", 
+    #  "vendor_dni",
+    #  "vendor_address", 
+    #  "vendor_province",
+    #  "buyer_name",
+    #  "buyer_dni",
+    #  "buyer_address",
+    #  "buyer_province",
+    #  "vehicle_brand",
+    #  "vehicle_plate",
+    #  "vehicle_chassis_nb",
+    #  "vehicle_kms",
+    #  "vehicle_value",
+    #  "insurance_date"
+    #]
+    extra=["vendor_province"]
+    return extra
     
     return extra + slots_mapped_in_domain
 
@@ -207,6 +210,27 @@ class ValidateContractForm(FormValidationAction):
     for entity in entities:
       if entity['entity'] == "province" and entity['extractor'] == "RegexEntityExtractor":
         value = entity['value']
+    
+    # We didn't find any matches, calculate the editdistance between 
+    # the provinces and all the words in the message
+    if not value:
+      provinces = ["Coruña", "Álava", "Albacete", "Alicante", "Almería", "Asturias", "Ávila", "Badajoz", "Baleares", "Barcelona", "Burgos", "Cáceres", "Cádiz", "Cantabria", "Castellón", "Ciudad Real", "Córdoba", "Cuenca", "Girona", "Granada", "Guadalajara", "Gipuzkoa", "Huelva", "Huesca", "Jaén", "La Rioja", "Las Palmas", "León", "Lérida", "Lugo", "Madrid", "Málaga", "Murcia", "Navarra", "Ourense", "Palencia", "Pontevedra", "Salamanca", "Segovia", "Sevilla", "Soria", "Tarragona", "Santa Cruz de Tenerife", "Teruel", "Toledo", "Valencia", "Valladolid", "Vizcaya", "Zamora", "Zaragoza", "Ceuta", "Melilla"]
+      message = tracker.latest_message['text']
+      scores = {}
+      for word in message.split(" "):
+        scores[word] = {"score": 999, "prov": None}
+        for prov in provinces:
+          distance = editdistance.eval(word.lower(), prov.lower())
+          if distance < scores[word]['score']:
+            scores[word]['score'] = distance
+            scores[word]['prov'] = prov
+            
+      # Select the lowest
+      lowest = 999
+      for item, data in scores.items():
+        if data['score'] < lowest:
+          lowest = data['score']
+          value = data['prov']
 
     return { "vendor_province": value }
 
