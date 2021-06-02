@@ -112,7 +112,7 @@ class ValidateContractForm(FormValidationAction):
     ) -> Optional[List[Text]]:
     
     #print("[SLOTS]", tracker.slots)
-    print("[LAST_MSG]", tracker.latest_message)
+    #print("[LAST_MSG]", tracker.latest_message)
     extra = [
       "vendor_name", 
       "vendor_dni",
@@ -177,12 +177,21 @@ class ValidateContractForm(FormValidationAction):
       return {}
 
     value = None
+    street_number = None
+    
     entities = tracker.latest_message['entities']
     for entity in entities:
       if entity['entity'] == "LOC" and entity['extractor'] == "SpacyEntityExtractor":
         value = entity['value']
+      if entity['entity'] == "number" and entity['extractor'] == "DucklingEntityExtractor" and value != None:
+        street_number = entity['value']
 
-    return { "vendor_address": value }
+    if street_number:
+      address = f"{value}, {street_number}"
+    else:
+      address = value 
+    
+    return { "vendor_address": address }
 
   async def extract_vendor_province(
     self,
@@ -229,12 +238,22 @@ class ValidateContractForm(FormValidationAction):
       return {}
 
     value = None
+    street_number = None
+    spacy_ents = []
+    
     entities = tracker.latest_message['entities']
     for entity in entities:
       if entity['entity'] == "LOC" and entity['extractor'] == "SpacyEntityExtractor":
         value = entity['value']
+      if entity['entity'] == "number" and entity['extractor'] == "DucklingEntityExtractor" and value != None:
+        street_number = entity['value']
 
-    return { "buyer_address": value }
+    if street_number:
+      address = f"{value}, {street_number}"
+    else:
+      address = value 
+    
+    return { "buyer_address": address }
 
   async def extract_buyer_dni(
     self,
@@ -377,6 +396,5 @@ class ValidateContractForm(FormValidationAction):
       if entity['entity'] == "time" and entity['extractor'] == "DucklingEntityExtractor":
         value = entity['value']
         value = value.split("T")[0]
-        print("VALUE=>", value)
 
     return { "insurance_date": value }
