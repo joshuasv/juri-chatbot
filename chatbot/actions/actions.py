@@ -114,23 +114,26 @@ class ValidateContractForm(FormValidationAction):
     
     #print("[SLOTS]", tracker.slots)
     #print("[LAST_MSG]", tracker.latest_message)
-    #extra = [
-    #  "vendor_name", 
-    #  "vendor_dni",
-    #  "vendor_address", 
-    #  "vendor_province",
-    #  "buyer_name",
-    #  "buyer_dni",
-    #  "buyer_address",
-    #  "buyer_province",
-    #  "vehicle_brand",
-    #  "vehicle_plate",
-    #  "vehicle_chassis_nb",
-    #  "vehicle_kms",
-    #  "vehicle_value",
-    #  "insurance_date"
-    #]
-    extra=["vendor_province"]
+    extra = [
+      "vendor_name", 
+      "vendor_dni",
+      "vendor_address", 
+      "vendor_province",
+      "buyer_name",
+      "buyer_dni",
+      "buyer_address",
+      "buyer_province",
+      "vehicle_brand",
+      "vehicle_plate",
+      "vehicle_chassis_nb",
+      "vehicle_kms",
+      "vehicle_value",
+      "insurance_date",
+      "court",
+      "vendor_signature",
+      "buyer_signature"
+    ]
+    #extra=["vendor_province"]
     return extra
     
     return extra + slots_mapped_in_domain
