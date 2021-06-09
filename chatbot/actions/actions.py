@@ -1,6 +1,7 @@
 # This files contains your custom actions which can be used to run
 # custom Python code.
 
+import re
 import json
 import requests
 import datetime
@@ -154,9 +155,9 @@ class ValidateContractForm(FormValidationAction):
     domain: "DomainDict",
     ) -> Optional[List[Text]]:
     
-    print("[SLOTS]", tracker.slots)
-    print("[LAST_MSG]", tracker.latest_message)
-    print("##########")
+    #print("[SLOTS]", tracker.slots)
+    #print("[LAST_MSG]", tracker.latest_message)
+    #print("##########")
     extra = [
       "vendor_name", 
       "vendor_dni",
@@ -176,6 +177,7 @@ class ValidateContractForm(FormValidationAction):
       "vendor_signature",
       "buyer_signature"
     ]
+    #extra = ["vendor_address"]
     
     return extra + slots_mapped_in_domain
 
@@ -229,9 +231,17 @@ class ValidateContractForm(FormValidationAction):
     tracker: Tracker,
     domain: Dict) -> Dict[Text, Any]:
       
+
+    abreviations = {
+      "Avenida": [r"[Aa]vda\.?", r"[Aa]v\.?",r"[Aa]venida"],
+      "Calle": [r"[Cc]/?", r"[Cc]\.?", r"[Cc]l\.?", r"[Cc]alle"],
+      "Paseo": [r"p\.?º?", r"[Pp]aseo"]
+    }
+
+    floor = r"[0-9](º|ª)?\s*[a-zA-Z]"
+    
     if tracker.latest_message['intent']['name'] == "change_slot" and tracker.latest_message['intent']['confidence'] > .99 and tracker.slots['slot_to_change'] != None:
       return {}
-      
       
     if not tracker.slots.get('requested_slot') == "vendor_address":
       return {}
@@ -243,14 +253,48 @@ class ValidateContractForm(FormValidationAction):
     for entity in entities:
       if entity['entity'] == "LOC" and entity['extractor'] == "SpacyEntityExtractor":
         value = entity['value']
-      if entity['entity'] == "number" and entity['extractor'] == "DucklingEntityExtractor" and value != None:
+      if entity['entity'] == "number" and entity['extractor'] == "DucklingEntityExtractor":
         street_number = entity['value']
-
+    if not value:
+      for entity in entities:
+        if entity['entity'] == "PER" and entity['extractor'] == "SpacyEntityExtractor":
+          value = entity['value']
+    st_type = "" 
+    bajo = ""
+    piso = ""
+    for word in tracker.latest_message['text'].split(" "):
+      # Check for street abreviations
+      for abrev, l in abreviations.items():
+        for regex_str in l:
+          regex = re.compile("^" + regex_str + "$")
+          if regex.match(word):
+            st_type = word
+            break
+        if st_type != "":
+          break
+      if st_type != "":
+        break
+      
+    for word in tracker.latest_message['text'].split(" "):
+      # Check if it's bajo
+      if re.compile(r"^[Bb]ajo$").match(word):
+        bajo = "Bajo"
+    # Check if it has floor
+    if re.compile(floor).match(tracker.latest_message['text']):
+      piso = re.compile(floor).match(tracker.latest_message['text']).group() 
+    
     if street_number:
       address = f"{value}, {street_number}"
     else:
       address = value 
-    
+    if st_type != "" and not st_type in address:
+      address = st_type + " " + address
+
+    if piso != "":
+      address = address + " " + piso.upper()
+    elif bajo != "":
+      address = address + " " + bajo
+
     tracker.slots['slot_to_change'] = None
     return { "vendor_address": address }
 
@@ -261,7 +305,6 @@ class ValidateContractForm(FormValidationAction):
     domain: Dict) -> Dict[Text, Any]:
 
     if tracker.latest_message['intent']['name'] == "change_slot" and tracker.latest_message['intent']['confidence'] > .99 and tracker.slots['slot_to_change'] != None:
-      print("ENTRAAAA???A?A?A?A?A??A?A?")
       return {}
       
     if not tracker.slots.get('requested_slot') == "vendor_province":
@@ -378,10 +421,9 @@ class ValidateContractForm(FormValidationAction):
     dispatcher: CollectingDispatcher,
     tracker: Tracker,
     domain: Dict) -> Dict[Text, Any]:
-      
+
     if tracker.latest_message['intent']['name'] == "change_slot" and tracker.latest_message['intent']['confidence'] > .99 and tracker.slots['slot_to_change'] != None:
       return {}
-      
       
     if not tracker.slots.get('requested_slot') == "buyer_province":
       return {}
@@ -391,6 +433,27 @@ class ValidateContractForm(FormValidationAction):
     for entity in entities:
       if entity['entity'] == "province" and entity['extractor'] == "RegexEntityExtractor":
         value = entity['value']
+    
+    # We didn't find any matches, calculate the editdistance between 
+    # the provinces and all the words in the message
+    if not value:
+      provinces = ["Coruña", "Álava", "Albacete", "Alicante", "Almería", "Asturias", "Ávila", "Badajoz", "Baleares", "Barcelona", "Burgos", "Cáceres", "Cádiz", "Cantabria", "Castellón", "Ciudad Real", "Córdoba", "Cuenca", "Girona", "Granada", "Guadalajara", "Gipuzkoa", "Huelva", "Huesca", "Jaén", "La Rioja", "Las Palmas", "León", "Lérida", "Lugo", "Madrid", "Málaga", "Murcia", "Navarra", "Ourense", "Palencia", "Pontevedra", "Salamanca", "Segovia", "Sevilla", "Soria", "Tarragona", "Santa Cruz de Tenerife", "Teruel", "Toledo", "Valencia", "Valladolid", "Vizcaya", "Zamora", "Zaragoza", "Ceuta", "Melilla"]
+      message = tracker.latest_message['text']
+      scores = {}
+      for word in message.split(" "):
+        scores[word] = {"score": 999, "prov": None}
+        for prov in provinces:
+          distance = editdistance.eval(word.lower(), prov.lower())
+          if distance < scores[word]['score']:
+            scores[word]['score'] = distance
+            scores[word]['prov'] = prov
+            
+      # Select the lowest
+      lowest = 999
+      for item, data in scores.items():
+        if data['score'] < lowest:
+          lowest = data['score']
+          value = data['prov']
 
     tracker.slots['slot_to_change'] = None
     return { "buyer_province": value }
@@ -412,6 +475,25 @@ class ValidateContractForm(FormValidationAction):
     for entity in entities:
       if entity['entity'] == "brand" and entity['extractor'] == 'RegexEntityExtractor':
         value = entity['value']
+        
+    if not value:
+      vehicle_brands = ["Abarth", "Alfa Romeo", "Aston Martin", "Audi", "Austin", "Bentley", "Bmw", "Cadillac", "Chevrolet", "Chrysler", "Citroen", "Dacia", "Daewoo", "Daihatsu", "Dodge", "Ferrari", "Fiat", "Ford", "Galloper", "Honda", "Hummer", "Hyundai", "Infiniti", "Isuzu", "Jaguar", "Jeep", "Kia", "Lada", "Lamborghini", "Lancia", "Land Rover", "Lexus", "Lotus", "Maserati", "Mazda", "Mercedes-Benz", "Mercedes", "MG", "Mini", "Mitsubishi", "Nissan", "Opel", "Peugeot", "Pontiac", "Porsche", "Renault", "Rolls-Royce", "Rover", "Saab", "Seat", "Skoda", "Smart", "Ssangyong", "Subaru", "Suzuki", "Talbot", "Tata", "Toyota", "Volkswagen", "Volvo"] 
+      message = tracker.latest_message['text']
+      scores = {}
+      for word in message.split(" "):
+        scores[word] = {"score": 999, "brand": None}
+        for brand in vehicle_brands:
+          distance = editdistance.eval(word.lower(), brand.lower())
+          if distance < scores[word]['score']:
+            scores[word]['score'] = distance
+            scores[word]['brand'] = brand 
+            
+      # Select the lowest
+      lowest = 999
+      for item, data in scores.items():
+        if data['score'] < lowest:
+          lowest = data['score']
+          value = data['brand']
 
     tracker.slots['slot_to_change'] = None
     return { "vehicle_brand": value }
