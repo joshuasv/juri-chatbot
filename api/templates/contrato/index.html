@@ -161,7 +161,6 @@
     <script>
       // initialize by constructing a named function...
       // ...and add text processing plugin:
-
       function makeid() {
         var result = "";
         var characters =
@@ -254,169 +253,55 @@
         }
       }
       function updateSlotsInfo(slots) {
-        if (slots.vendor_name !== null) {
-          var text = document.getElementById("vendor_name");
-          text.innerHTML = "[Nombre] " + slots.vendor_name;
-          var slot = document.getElementById("slot_vendor_name");
-          var editBtn = slot.querySelector(".editBtn");
-          if (editBtn === null) {
-            editBtn = document.createElement("editBtn");
-            editBtn.innerHTML = "<div><button id=\"editBtn\" class=\"editBtn\" onClick=\"edit(\'vendor_name\')\">Editar</button></div>"; 
-            slot.insertBefore(editBtn, slot.childNodes[0]); 
-          }
-        }
-        if (slots.vendor_dni !== null) {
-          var text = document.getElementById("vendor_dni");
-          text.innerHTML = "[DNI] " + slots.vendor_dni;
-          var slot = document.getElementById("slot_vendor_dni");
-          var editBtn = slot.querySelector(".editBtn");
-          if (editBtn === null) {
-            editBtn = document.createElement("editBtn");
-            editBtn.innerHTML = "<div><button id=\"editBtn\" class=\"editBtn\" onClick=\"edit(\'vendor_dni\')\">Editar</button></div>"; 
-            slot.insertBefore(editBtn, slot.childNodes[0]); 
-          }
-        }
-        if (slots.vendor_address !== null) {
-          var text = document.getElementById("vendor_address");
-          text.innerHTML = "[Dirección] " + slots.vendor_address;
-          var slot = document.getElementById("slot_vendor_address");
-          var editBtn = slot.querySelector(".editBtn");
-          if (editBtn === null) {
-            editBtn = document.createElement("editBtn");
-            editBtn.innerHTML = "<div><button id=\"editBtn\" class=\"editBtn\" onClick=\"edit(\'vendor_address\')\">Editar</button></div>"; 
-            slot.insertBefore(editBtn, slot.childNodes[0]); 
-          }
-        }
-        if (slots.vendor_province !== null) {
-          var text = document.getElementById("vendor_province");
-          text.innerHTML = "[Provincia] " + slots.vendor_province;
-          var slot = document.getElementById("slot_vendor_province");
-          var editBtn = slot.querySelector(".editBtn");
-          if (editBtn === null) {
-            editBtn = document.createElement("editBtn");
-            editBtn.innerHTML = "<div><button id=\"editBtn\" class=\"editBtn\" onClick=\"edit(\'vendor_province\')\">Editar</button></div>"; 
-            slot.insertBefore(editBtn, slot.childNodes[0]); 
-          }
-        }
-        if (slots.buyer_name !== null) {
-          var text = document.getElementById("buyer_name");
-          text.innerHTML = "[Nombre] " + slots.buyer_name;
-          var slot = document.getElementById("slot_buyer_name");
-          var editBtn = slot.querySelector(".editBtn");
-          if (editBtn === null) {
-            editBtn = document.createElement("editBtn");
-            editBtn.innerHTML = "<div><button id=\"editBtn\" class=\"editBtn\" onClick=\"edit(\'buyer_name\')\">Editar</button></div>"; 
-            slot.insertBefore(editBtn, slot.childNodes[0]); 
-          }
-        }
-        if (slots.buyer_dni !== null) {
-          var text = document.getElementById("buyer_dni");
-          text.innerHTML = "[DNI] " + slots.buyer_dni;
-          var slot = document.getElementById("slot_buyer_dni");
-          var editBtn = slot.querySelector(".editBtn");
-          if (editBtn === null) {
-            editBtn = document.createElement("editBtn");
-            editBtn.innerHTML = "<div><button id=\"editBtn\" class=\"editBtn\" onClick=\"edit(\'buyer_dni\')\">Editar</button></div>"; 
-            slot.insertBefore(editBtn, slot.childNodes[0]); 
-          }
-        }
-        if (slots.buyer_address !== null) {
-          var text = document.getElementById("buyer_address");
-          text.innerHTML = "[Dirección] " + slots.buyer_address;
-          var slot = document.getElementById("slot_buyer_address");
-          var editBtn = slot.querySelector(".editBtn");
-          if (editBtn === null) {
-            editBtn = document.createElement("editBtn");
-            editBtn.innerHTML = "<div><button id=\"editBtn\" class=\"editBtn\" onClick=\"edit(\'buyer_address\')\">Editar</button></div>"; 
-            slot.insertBefore(editBtn, slot.childNodes[0]); 
-          }
-        }
-        if (slots.buyer_province !== null) {
-          var text = document.getElementById("buyer_province");
-          text.innerHTML = "[Provincia] " + slots.buyer_province;
-          var slot = document.getElementById("slot_buyer_province");
-          var editBtn = slot.querySelector(".editBtn");
-          if (editBtn === null) {
-            editBtn = document.createElement("editBtn");
-            editBtn.innerHTML = "<div><button id=\"editBtn\" class=\"editBtn\" onClick=\"edit(\'buyer_province\')\">Editar</button></div>"; 
-            slot.insertBefore(editBtn, slot.childNodes[0]); 
-          }
-        }
-        if (slots.vehicle_brand !== null) {
-          var text = document.getElementById("vehicle_brand");
-          text.innerHTML = "[Marca] " + slots.vehicle_brand;
-          var slot = document.getElementById("slot_vehicle_brand");
-          var editBtn = slot.querySelector(".editBtn");
-          if (editBtn === null) {
-            editBtn = document.createElement("editBtn");
-            editBtn.innerHTML = "<div><button id=\"editBtn\" class=\"editBtn\" onClick=\"edit(\'vehicle_brand\')\">Editar</button></div>"; 
-            slot.insertBefore(editBtn, slot.childNodes[0]); 
-          }
-        }
-        if (slots.vehicle_plate !== null) {
-          var text = document.getElementById("vehicle_plate");
-          text.innerHTML = "[Matrícula] " + slots.vehicle_plate;
-          var slot = document.getElementById("slot_vehicle_plate");
-          var editBtn = slot.querySelector(".editBtn");
-          if (editBtn === null) {
-            editBtn = document.createElement("editBtn");
-            editBtn.innerHTML = "<div><button id=\"editBtn\" class=\"editBtn\" onClick=\"edit(\'vehicle_plate\')\">Editar</button></div>"; 
-            slot.insertBefore(editBtn, slot.childNodes[0]); 
-          }
-        }
-        if (slots.vehicle_chassis_nb !== null) {
-          var text = document.getElementById("vehicle_chassis_nb");
-          text.innerHTML = "[Nº Bastidor] " + slots.vehicle_chassis_nb;
-          var slot = document.getElementById("slot_vehicle_chassis_nb");
-          var editBtn = slot.querySelector(".editBtn");
-          if (editBtn === null) {
-            editBtn = document.createElement("editBtn");
-            editBtn.innerHTML = "<div><button id=\"editBtn\" class=\"editBtn\" onClick=\"edit(\'vehicle_chassis_nb\')\">Editar</button></div>"; 
-            slot.insertBefore(editBtn, slot.childNodes[0]); 
-          }
-        }
-        if (slots.vehicle_kms !== null) {
-          var text = document.getElementById("vehicle_kms");
-          text.innerHTML = "[Kilómetros] " + slots.vehicle_kms;
-          var slot = document.getElementById("slot_vehicle_kms");
-          var editBtn = slot.querySelector(".editBtn");
-          if (editBtn === null) {
-            editBtn = document.createElement("editBtn");
-            editBtn.innerHTML = "<div><button id=\"editBtn\" class=\"editBtn\" onClick=\"edit(\'vehicle_kms\')\">Editar</button></div>"; 
-            slot.insertBefore(editBtn, slot.childNodes[0]); 
-          }
-        }
-        if (slots.vehicle_value !== null) {
-          var text = document.getElementById("vehicle_value");
-          text.innerHTML = "[Precio venta] " + slots.vehicle_value;
-          var slot = document.getElementById("slot_vehicle_value");
-          var editBtn = slot.querySelector(".editBtn");
-          if (editBtn === null) {
-            editBtn = document.createElement("editBtn");
-            editBtn.innerHTML = "<div><button id=\"editBtn\" class=\"editBtn\" onClick=\"edit(\'vehicle_value\')\">Editar</button></div>"; 
-            slot.insertBefore(editBtn, slot.childNodes[0]); 
-          }
-        }
-        if (slots.insurance_date !== null) {
-          var text = document.getElementById("insurance_date");
-          text.innerHTML = "[Fecha seguro] " + slots.insurance_date;
-          var slot = document.getElementById("slot_insurance_date");
-          var editBtn = slot.querySelector(".editBtn");
-          if (editBtn === null) {
-            editBtn = document.createElement("editBtn");
-            editBtn.innerHTML = "<div><button id=\"editBtn\" class=\"editBtn\" onClick=\"edit(\'insurance_date\')\">Editar</button></div>"; 
-            slot.insertBefore(editBtn, slot.childNodes[0]); 
-          }
-        }
-        if (slots.court !== null) {
-          var text = document.getElementById("court");
-          text.innerHTML = "[Juzgados Y Tribunales] " + slots.court;
-          var slot = document.getElementById("slot_court");
-          var editBtn = slot.querySelector(".editBtn");
-          if (editBtn === null) {
-            editBtn = document.createElement("editBtn");
-            editBtn.innerHTML = "<div><button id=\"editBtn\" class=\"editBtn\" onClick=\"edit(\'court\')\">Editar</button></div>"; 
-            slot.insertBefore(editBtn, slot.childNodes[0]); 
+          
+        not_interested = ["slot_to_change", "contract_id", "requested_slot", "session_started_metadata", "vendor_signature", "buyer_signature"];
+        
+        name_mappings = {
+          "vendor_name": "Nombre",
+          "vendor_dni": "DNI",
+          "vendor_address": "Dirección",
+          "vendor_province": "Provincia",
+          "buyer_name": "Nombre",
+          "buyer_dni": "DNI",
+          "buyer_address": "Dirección",
+          "buyer_province": "Provincia",
+          "vehicle_brand": "Marca",
+          "vehicle_plate": "Matrícula",
+          "vehicle_chassis_nb": "Nº Bastidor",
+          "vehicle_kms": "Kilómetros",
+          "vehicle_value": "Precio",
+          "insurance_date": "Fecha seguro",
+          "court": "Juzgados Y Tribunales"
+        };
+
+
+        for (const [key, value] of Object.entries(slots)) {
+          if (!(not_interested.indexOf(key) > -1)) {
+
+            if (value !== null) {
+              var text = document.getElementById(key);
+              text.innerHTML = "[" + name_mappings[key] +"] " + value;
+              var slot = document.getElementById("slot_"+key);
+              var editBtn = slot.querySelector(".editBtn");
+              if (editBtn === null) {
+                editBtn = document.createElement("editBtn");
+                editBtn.innerHTML = "<div><button id=\"editBtn\" class=\"editBtn\" onClick=\"edit(\'"+key+"\')\">Editar</button></div>"; 
+                slot.insertBefore(editBtn, slot.childNodes[0]); 
+              }
+              else {
+                editBtn.style.display = 'inline-block';
+              }
+            }
+            else {
+              var text = document.getElementById(key);
+              text.innerHTML = "[" + name_mappings[key] + "] <i>Vacío...</i>";
+              var slot = document.getElementById("slot_"+key);
+              var editBtn = slot.querySelector(".editBtn");
+              if (editBtn !== null) {
+                editBtn.style.display = 'none'; 
+              }
+            }
+            console.log(key, value);
           }
         }
       }      
@@ -612,11 +497,46 @@
       var btnCancel = document.getElementById("btnCancel");
       var btnSave = document.getElementById("btnSave");
 
+      var text_mappings = {
+        "vendor_name": "el nombre del vendedor",
+        "vendor_dni": "el DNI del vendedor",
+        "vendor_address": "la dirección del vendedor",
+        "vendor_province": "la provincia del vendedor",
+        "buyer_name": "el nombre del comprador",
+        "buyer_dni": "el DNI del comprador",
+        "buyer_address": "la dirección del comprador",
+        "buyer_province": "la provincia del comprador",
+        "vehicle_brand": "la marca del coche",
+        "vehicle_plate": "la matrícula del coche",
+        "vehicle_chassis_nb": "el nº de bastidor",
+        "vehicle_kms": "los kilómetros que tiene el coche",
+        "vehicle_value": "el precio de venta del coche",
+        "insurance_date": "la fecha de validez del seguro",
+        "court": "los Juzgados y Tribunales"
+      }
+
       function edit(slotName) {
-        modal.style.display = "block";
-        slot = slotName;
-        var modalHeaderText = document.getElementById("modalHeaderText");
-        modalHeaderText.innerHTML = getTextModalHeader(slot); 
+        // First we set the slot we want to change 
+        var xhrset = new XMLHttpRequest();
+        var url = base_url + "/conversations/"+client_id+"/tracker/events?include_events=NONE";
+        var request_body = {
+          "event": "slot",
+          "name": "slot_to_change",
+          "value": slotName,
+          "timestamp": 0 };
+        
+        xhrset.onreadystatechange = function () {
+          if (xhrset.readyState == XMLHttpRequest.DONE) {
+            // Set textarea text and simulate an enter keypress 
+            var textArea = document.getElementsByTagName("textarea")[0]
+            textArea.value = "Quiero cambiar " + text_mappings[slotName]
+            textArea.dispatchEvent(new KeyboardEvent('keypress', { 'keyCode': 13 }));
+            textArea.focus();
+          }
+        };
+        xhrset.open("POST", url, true);
+        xhrset.setRequestHeader("Content-Type", "application/json");
+        xhrset.send(JSON.stringify(request_body));
       }
 
       btnCancel.onclick = function() {

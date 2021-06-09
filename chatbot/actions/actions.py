@@ -19,6 +19,48 @@ BASE_URL_API = "http://127.0.0.1:8001/api/"
 
 
 
+class ActionChangeSlot(Action):
+
+
+  text_mappings = {
+    "vendor_name": "el nombre del vendedor",
+    "vendor_dni": "el DNI del vendedor",
+    "vendor_address": "la dirección del vendedor",
+    "vendor_province": "la provincia del vendedor",
+    "buyer_name": "el nombre del comprador",
+    "buyer_dni": "el DNI del comprador",
+    "buyer_address": "la dirección del comprador",
+    "buyer_province": "la provincia del comprador",
+    "vehicle_brand": "la marca del coche",
+    "vehicle_plate": "la matrícula del coche",
+    "vehicle_chassis_nb": "el nº de bastidor",
+    "vehicle_kms": "los kilómetros que tiene el coche",
+    "vehicle_price": "el precio de venta del coche",
+    "insurance_date": "la fecha de validez del seguro",
+    "court": "los Juzgados y Tribunales"
+  }
+  
+  def name(self):
+    return "action_change_slot"
+
+  def run(
+    self,
+    dispatcher: CollectingDispatcher,
+    tracker: Tracker,
+    domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+  
+    slot_to_change = tracker.slots['slot_to_change'] 
+    
+    text = "¡Vaya! Veo que quieres cambiar {0}".format(self.text_mappings[slot_to_change])
+    dispatcher.utter_message(text=text)
+
+    return [
+      SlotSet(key=slot_to_change, value=None),
+      SlotSet(key="requested_slot", value=slot_to_change)
+    ]
+
+
+
 class ActionCreateContract(Action):
   
   def name(self):
@@ -112,8 +154,9 @@ class ValidateContractForm(FormValidationAction):
     domain: "DomainDict",
     ) -> Optional[List[Text]]:
     
-    #print("[SLOTS]", tracker.slots)
-    #print("[LAST_MSG]", tracker.latest_message)
+    print("[SLOTS]", tracker.slots)
+    print("[LAST_MSG]", tracker.latest_message)
+    print("##########")
     extra = [
       "vendor_name", 
       "vendor_dni",
@@ -133,8 +176,6 @@ class ValidateContractForm(FormValidationAction):
       "vendor_signature",
       "buyer_signature"
     ]
-    #extra=["vendor_province"]
-    return extra
     
     return extra + slots_mapped_in_domain
 
@@ -143,6 +184,9 @@ class ValidateContractForm(FormValidationAction):
     dispatcher: CollectingDispatcher,
     tracker: Tracker,
     domain: Dict) -> Dict[Text, Any]:
+
+    if tracker.latest_message['intent']['name'] == "change_slot" and tracker.latest_message['intent']['confidence'] > .99 and tracker.slots['slot_to_change'] != None:
+      return {}
 
     if not tracker.slots.get('requested_slot') == "vendor_name":
       return {}
@@ -153,6 +197,7 @@ class ValidateContractForm(FormValidationAction):
       if entity['entity'] == "PER" and entity['extractor'] == "SpacyEntityExtractor":
         value = entity['value']
 
+    tracker.slots['slot_to_change'] = None
     return { "vendor_name":  value }
 
   async def extract_vendor_dni(
@@ -160,6 +205,10 @@ class ValidateContractForm(FormValidationAction):
     dispatcher: CollectingDispatcher,
     tracker: Tracker,
     domain: Dict) -> Dict[Text, Any]:
+      
+
+    if tracker.latest_message['intent']['name'] == "change_slot" and tracker.latest_message['intent']['confidence'] > .99 and tracker.slots['slot_to_change'] != None:
+      return {}
       
     if not tracker.slots.get('requested_slot') == "vendor_dni":
       return {}
@@ -170,6 +219,7 @@ class ValidateContractForm(FormValidationAction):
       if entity['entity'] == "dni" and entity['extractor'] == "RegexEntityExtractor":
         value = entity['value']
 
+    tracker.slots['slot_to_change'] = None
     return { "vendor_dni": value }
 
 
@@ -178,6 +228,10 @@ class ValidateContractForm(FormValidationAction):
     dispatcher: CollectingDispatcher,
     tracker: Tracker,
     domain: Dict) -> Dict[Text, Any]:
+      
+    if tracker.latest_message['intent']['name'] == "change_slot" and tracker.latest_message['intent']['confidence'] > .99 and tracker.slots['slot_to_change'] != None:
+      return {}
+      
       
     if not tracker.slots.get('requested_slot') == "vendor_address":
       return {}
@@ -197,6 +251,7 @@ class ValidateContractForm(FormValidationAction):
     else:
       address = value 
     
+    tracker.slots['slot_to_change'] = None
     return { "vendor_address": address }
 
   async def extract_vendor_province(
@@ -204,6 +259,10 @@ class ValidateContractForm(FormValidationAction):
     dispatcher: CollectingDispatcher,
     tracker: Tracker,
     domain: Dict) -> Dict[Text, Any]:
+
+    if tracker.latest_message['intent']['name'] == "change_slot" and tracker.latest_message['intent']['confidence'] > .99 and tracker.slots['slot_to_change'] != None:
+      print("ENTRAAAA???A?A?A?A?A??A?A?")
+      return {}
       
     if not tracker.slots.get('requested_slot') == "vendor_province":
       return {}
@@ -235,6 +294,7 @@ class ValidateContractForm(FormValidationAction):
           lowest = data['score']
           value = data['prov']
 
+    tracker.slots['slot_to_change'] = None
     return { "vendor_province": value }
 
   async def extract_buyer_name(
@@ -242,6 +302,10 @@ class ValidateContractForm(FormValidationAction):
     dispatcher: CollectingDispatcher,
     tracker: Tracker,
     domain: Dict) -> Dict[Text, Any]:
+      
+    if tracker.latest_message['intent']['name'] == "change_slot" and tracker.latest_message['intent']['confidence'] > .99 and tracker.slots['slot_to_change'] != None:
+      return {}
+      
 
     if not tracker.slots.get('requested_slot') == "buyer_name":
       return {}
@@ -252,6 +316,7 @@ class ValidateContractForm(FormValidationAction):
       if entity['entity'] == "PER" and entity['extractor'] == "SpacyEntityExtractor":
         value = entity['value']
 
+    tracker.slots['slot_to_change'] = None
     return { "buyer_name":  value }
 
 
@@ -260,6 +325,9 @@ class ValidateContractForm(FormValidationAction):
     dispatcher: CollectingDispatcher,
     tracker: Tracker,
     domain: Dict) -> Dict[Text, Any]:
+      
+    if tracker.latest_message['intent']['name'] == "change_slot" and tracker.latest_message['intent']['confidence'] > .99 and tracker.slots['slot_to_change'] != None:
+      return {}
       
     if not tracker.slots.get('requested_slot') == "buyer_address":
       return {}
@@ -280,6 +348,7 @@ class ValidateContractForm(FormValidationAction):
     else:
       address = value 
     
+    tracker.slots['slot_to_change'] = None
     return { "buyer_address": address }
 
   async def extract_buyer_dni(
@@ -287,6 +356,10 @@ class ValidateContractForm(FormValidationAction):
     dispatcher: CollectingDispatcher,
     tracker: Tracker,
     domain: Dict) -> Dict[Text, Any]:
+      
+    if tracker.latest_message['intent']['name'] == "change_slot" and tracker.latest_message['intent']['confidence'] > .99 and tracker.slots['slot_to_change'] != None:
+      return {}
+      
       
     if not tracker.slots.get('requested_slot') == "buyer_dni":
       return {}
@@ -297,6 +370,7 @@ class ValidateContractForm(FormValidationAction):
       if entity['entity'] == "dni" and entity['extractor'] == "RegexEntityExtractor":
         value = entity['value']
 
+    tracker.slots['slot_to_change'] = None
     return { "buyer_dni": value }
 
   async def extract_buyer_province(
@@ -304,6 +378,10 @@ class ValidateContractForm(FormValidationAction):
     dispatcher: CollectingDispatcher,
     tracker: Tracker,
     domain: Dict) -> Dict[Text, Any]:
+      
+    if tracker.latest_message['intent']['name'] == "change_slot" and tracker.latest_message['intent']['confidence'] > .99 and tracker.slots['slot_to_change'] != None:
+      return {}
+      
       
     if not tracker.slots.get('requested_slot') == "buyer_province":
       return {}
@@ -314,6 +392,7 @@ class ValidateContractForm(FormValidationAction):
       if entity['entity'] == "province" and entity['extractor'] == "RegexEntityExtractor":
         value = entity['value']
 
+    tracker.slots['slot_to_change'] = None
     return { "buyer_province": value }
 
   async def extract_vehicle_brand(
@@ -321,7 +400,10 @@ class ValidateContractForm(FormValidationAction):
     dispatcher: CollectingDispatcher,
     tracker: Tracker,
     domain: Dict) -> Dict[Text, Any]:
-    
+      
+    if tracker.latest_message['intent']['name'] == "change_slot" and tracker.latest_message['intent']['confidence'] > .99 and tracker.slots['slot_to_change'] != None:
+      return {}
+      
     if not tracker.slots.get('requested_slot') == "vehicle_brand":
       return {}
     
@@ -331,6 +413,7 @@ class ValidateContractForm(FormValidationAction):
       if entity['entity'] == "brand" and entity['extractor'] == 'RegexEntityExtractor':
         value = entity['value']
 
+    tracker.slots['slot_to_change'] = None
     return { "vehicle_brand": value }
     
   async def extract_vehicle_plate(
@@ -338,7 +421,10 @@ class ValidateContractForm(FormValidationAction):
     dispatcher: CollectingDispatcher,
     tracker: Tracker,
     domain: Dict) -> Dict[Text, Any]:
-    
+      
+    if tracker.latest_message['intent']['name'] == "change_slot" and tracker.latest_message['intent']['confidence'] > .99 and tracker.slots['slot_to_change'] != None:
+      return {}
+      
     if not tracker.slots.get('requested_slot') == "vehicle_plate":
       return {}
     
@@ -352,6 +438,7 @@ class ValidateContractForm(FormValidationAction):
         if value != None:
           value = value.replace(" ", "").replace("-", "").upper()
 
+    tracker.slots['slot_to_change'] = None
     return { "vehicle_plate": value }
 
   async def extract_vehicle_chassis_nb(
@@ -359,6 +446,9 @@ class ValidateContractForm(FormValidationAction):
     dispatcher: CollectingDispatcher,
     tracker: Tracker,
     domain: Dict) -> Dict[Text, Any]:
+      
+    if tracker.latest_message['intent']['name'] == "change_slot" and tracker.latest_message['intent']['confidence'] > .99 and tracker.slots['slot_to_change'] != None:
+      return {}
     
     if not tracker.slots.get('requested_slot') == "vehicle_chassis_nb":
       return {}
@@ -369,6 +459,7 @@ class ValidateContractForm(FormValidationAction):
       if entity['entity'] == "chassis_nb" and entity['extractor'] == 'RegexEntityExtractor':
         value = entity['value']
 
+    tracker.slots['slot_to_change'] = None
     return { "vehicle_chassis_nb": value }
 
 
@@ -377,6 +468,9 @@ class ValidateContractForm(FormValidationAction):
     dispatcher: CollectingDispatcher,
     tracker: Tracker,
     domain: Dict) -> Dict[Text, Any]:
+      
+    if tracker.latest_message['intent']['name'] == "change_slot" and tracker.latest_message['intent']['confidence'] > .99 and tracker.slots['slot_to_change'] != None:
+      return {}
     
     if not tracker.slots.get('requested_slot') == "vehicle_kms":
       return {}
@@ -388,6 +482,7 @@ class ValidateContractForm(FormValidationAction):
         value = entity['value']
       elif entity['entity'] == "number" and entity['extractor'] == "DucklingEntityExtractor":
         value = entity['value']
+    tracker.slots['slot_to_change'] = None
     return { "vehicle_kms": value }
 
   async def extract_vehicle_value(
@@ -395,6 +490,9 @@ class ValidateContractForm(FormValidationAction):
     dispatcher: CollectingDispatcher,
     tracker: Tracker,
     domain: Dict) -> Dict[Text, Any]:
+      
+    if tracker.latest_message['intent']['name'] == "change_slot" and tracker.latest_message['intent']['confidence'] > .99 and tracker.slots['slot_to_change'] != None:
+      return {}
     
     if not tracker.slots.get('requested_slot') == "vehicle_value":
       return {}
@@ -406,6 +504,7 @@ class ValidateContractForm(FormValidationAction):
         value = entity['value']
       elif entity['entity'] == "number" and entity['extractor'] == "DucklingEntityExtractor":
         value = entity['value']
+    tracker.slots['slot_to_change'] = None
     return { "vehicle_value": value }
 
   async def extract_insurance_date(
@@ -413,6 +512,9 @@ class ValidateContractForm(FormValidationAction):
     dispatcher: CollectingDispatcher,
     tracker: Tracker,
     domain: Dict) -> Dict[Text, Any]:
+      
+    if tracker.latest_message['intent']['name'] == "change_slot" and tracker.latest_message['intent']['confidence'] > .99 and tracker.slots['slot_to_change'] != None:
+      return {}
     
     if not tracker.slots.get('requested_slot') == "insurance_date":
       return {}
@@ -424,4 +526,5 @@ class ValidateContractForm(FormValidationAction):
         value = entity['value']
         value = value.split("T")[0]
 
+    tracker.slots['slot_to_change'] = None
     return { "insurance_date": value }

@@ -13,4 +13,3 @@ stories:
   - active_loop: contract_form
   - active_loop: null
   - action: action_submit_form 
-  

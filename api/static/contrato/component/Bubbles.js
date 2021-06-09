@@ -72,12 +72,14 @@ function Bubbles(container, self, options) {
   bubbleWrap.className = "bubble-wrap"
   container.appendChild(bubbleWrap)
 
+
+
   // install user input textfield
   this.typeInput = function(callbackFn) {
     var inputWrap = document.createElement("div")
     inputWrap.className = "input-wrap"
     var inputText = document.createElement("textarea")
-    inputText.setAttribute("placeholder", "Ask me anything...")
+    inputText.setAttribute("placeholder", "Habla conmigo...")
     inputWrap.appendChild(inputText)
     inputText.addEventListener("keypress", function(e) {
       // register user input

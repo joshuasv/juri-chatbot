@@ -1,6 +1,22 @@
 version: "2.0"
-
 nlu:
+- intent: change_slot 
+  examples: |
+    - quiero cambiar el nombre del comprador
+    - quiero cambiar el nombre del vendedor
+    - quiero cambiar la dirección del vendedor
+    - quiero cambiar la dirección del comprador
+    - quiero cambiar el DNI del comprador
+    - quiero cambiar el DNI del vendedor 
+    - quiero cambiar la provincia del comprador
+    - quiero cambiar la provincia del vendedor
+    - quiero cambiar la marca del coche
+    - quiero cambiar la matrícula del coche
+    - quiero cambiar el nº de bastidor
+    - quiero cambiar los kilómetros que tiene el coche
+    - quiero cambiar el precio de venta del coche
+    - quiero cambiar la fecha de validez del seguro
+    - quiero cambiar los juzgados y tribunales 
 - intent: greet
   examples: |
     - hey
@@ -16,7 +32,7 @@ nlu:
     - bns trds
     - bns noches
     - como andas?
-
+    - Hola
 - intent: goodbye
   examples: |
     - buenas noches
@@ -27,7 +43,7 @@ nlu:
     - ciao
     - ten un buen día
     - hasta pronto
-
+    - Pepe
 - intent: new_contract
   examples: |
     - crear contrato nuevo
@@ -37,7 +53,6 @@ nlu:
     - uno nuevo
     - contrato nuevo
     - me gustaría crear uno
-
 - intent: load_contract
   examples: |
     - cargar un contrato
@@ -46,9 +61,7 @@ nlu:
     - me gustaría continuar con un contrato
     - reanudar contrato
     - quiero continuar con uno ya existente
-    - continuar con uno
     - continuar con el mío
-
 - intent: affirm
   examples: |
     - si
@@ -67,7 +80,7 @@ nlu:
     - okei
     - okay
     - okey
-
+    - [claro!]{"entity": "affirm", "value": "Claro!"}
 - intent: reply_name
   examples: |
     - el nombre es
@@ -80,46 +93,52 @@ nlu:
     - creo que se llama
     - juraría que se llama
     - [Pedro Sánchez Castejón](PER)
-    #- el nombre es [juan soutelo álvarez](name)
-    #- el nombe es [Mercedes del Tovoso Rodríguez](name)
-    #- su nombre es [Pepito Fernández Pérez](name)
-    #- [Óscar Giráldez Facundo](name)
-    #- creo que es [Raquel Miranda Soutelo Vieira](name)
-    #- juraría que se llama [Fernando Blanco Carrero](name)
-    #- se llama [María Asunción del carmen](name)
-    #- es [Rosa Moreira Cuevas](name)
-    #- su nombre completo es [noelia garcía sanchez](name)
-    #- el vendedor es [Magdalena Alcalde Pareja](name)
-    #- [josefina Cornejo araujo](name) es su nombre
-    #- [Maria-jesus Lujan mera](name) es el comprador
-    #- [Eugenio De-La-Fuente Minguez](name) creo que es
-    #- [rodolfo villena](name) es el vendedor
-    #- [Ezequiel Florez Alamo](name) se llama
-    #- Puede que sea [Felipe Juan Froilán de todos los Santos](name)
-    #- [elda velasco arredondo](name) es su nombre
-    #- [Amantzi Olmos Montemayor](name) es el venedor
-    #- la vendedora es [Carissa Frías Yáñez](name)
-    #- [Augusto Olvera](name) es la compradora
-    #- le llaman [Theodora Lucero Osorio](name)
-    #- [irving saavedra Urrútia] la llaman
-    #- la conocen como [Theo Aparicio Aparicio](name)
-    #- mundialmente conocido como [Takara Franco](name)
-    #- es conocido como [Columbo escamilla-concepción](name)
-    #- [Lucho ulloa espino](name)
-    #- [Celsa Jasso Nieto](name)
-    #- se le conoce como [juan ramón rallo](name)
-
-- regex: dni
-  examples: |
-    - [0-9]{8}[a-zA-Z]{1}
 - intent: reply_dni
   examples: |
     - el dni del comprador es [41133302a](dni)
     - [34478901B](dni) es su carnet de identidad
     - su dni es [12312311c](dni)
     - creo que su carnet es [4441414o](dni)
-
-- lookup: province 
+- intent: reply_province
+  examples: |
+    - [Ceuta](province)
+    - es de [Las Palmas](province)
+    - vive en [teruel](province)
+    - de [ourense](province)
+- intent: reply_vehicle_brand
+  examples: |
+    - [Audi](brand)
+    - Es un [Mercedes-Benz](brand)
+    - quiere vender un [honda](brand)
+    - queremos vender un [ferrari](brand)
+    - [Smart](brand) es la marca
+    - es un [tata](brand)
+    - creo que es [seat](brand)
+    - [hyundai](brand)
+- intent: reply_vehicle_plate
+  examples: |
+    - la matricula es [9128KKQ](plate)
+    - [3333LLL](plate)
+    - [1234-POL](plate)
+- intent: reply_vehicle_chassis_nb
+  examples: |
+    - el número de chásis es [12345678](chassis_nb)
+    - [09876128](chassis_nb)
+    - es LJCPCBLCX[11000237](chassis_nb)
+- regex: chassis_nb
+  examples: |
+    - [0-9]{8}
+- regex: dni
+  examples: |
+    - [0-9]{8}[a-zA-Z]{1}
+- regex: plate
+  examples: |
+    - [0-9]{4}[A-Za-z]{3}
+    - [A-Za-z]{1,3}[- ]*[0-9]{1,6}
+    - [A-Za-z]{2}[- ]*[0-9]{4}[- ]*[A-Z]{1,2}
+    - [Cc][- ]*[0-9]{4}[- ]*[A-Za-z]{3}
+    - [Hh][- ]*[0-9]{4}[- ]*[A-Za-z]{3}
+- lookup: province
   examples: |
     - Coruña
     - Álava
@@ -173,13 +192,6 @@ nlu:
     - Zaragoza
     - Ceuta
     - Melilla
-- intent: reply_province
-  examples: |
-    - [Ceuta](province)
-    - es de [Las Palmas](province)
-    - vive en [teruel](province)
-    - de [ourense](province)
-
 - lookup: brand
   examples: |
     - Abarth
@@ -242,51 +254,3 @@ nlu:
     - Toyota
     - Volkswagen
     - Volvo
-- intent: reply_vehicle_brand
-  examples: |
-    - [Audi](brand)
-    - Es un [Mercedes-Benz](brand)
-    - quiere vender un [honda](brand)
-    - queremos vender un [ferrari](brand)
-    - [Smart](brand) es la marca
-    - es un [tata](brand)
-    - creo que es [seat](brand)
-    - [hyundai](brand)
-
-- regex: plate 
-  examples: |
-    - [0-9]{4}[A-Za-z]{3}
-    - [Cc][- ]*[0-9]{4}[- ]*[A-Za-z]{3}
-    - [Hh][- ]*[0-9]{4}[- ]*[A-Za-z]{3}
-    - [A-Za-z]{2}[- ]*[0-9]{4}[- ]*[A-Z]{1,2}
-    - [A-Za-z]{1,3}[- ]*[0-9]{1,6}
-- intent: reply_vehicle_plate
-  examples: |
-    - la matricula es [9128KKQ](plate)
-    - [3333LLL](plate)
-    - [1234-POL](plate)
-
-- regex: chassis_nb
-  examples: |
-    - [0-9]{8}
-- intent: reply_vehicle_chassis_nb
-  examples: |
-    - el número de chásis es [12345678](chassis_nb)
-    - [09876128](chassis_nb)
-    - es LJCPCBLCX[11000237](chassis_nb)
-
-#- regex: numeric_value
-#  examples: |
-#    - [1-9][0-9]*([.,][0-9]+)*
-#
-#- intent: reply_vehicle_kms
-#  examples: |
-#    - tiene [123.123](numeric_value) kms
-#    - creo que tiene [12312312](numeric_value) kilómetros
-#    - unos [800000](numeric_value)
-#
-#- intent: reply_vehicle_value
-#  examples: |
-#    - el precio es de [12.000,74](numeric_value) euros
-#    - vale [800](numeric_value) €
-#    - [500,30](numeric_value)

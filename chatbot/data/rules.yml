@@ -27,4 +27,10 @@ rules:
       - requested_slot: null
     - action: action_submit_form 
 
-
+  - rule: change slot inside form
+    condition:
+    - active_loop: contract_form
+    steps:
+    - intent: change_slot
+    - action: action_change_slot
+    - action: contract_form
