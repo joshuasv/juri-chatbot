@@ -20,6 +20,8 @@ BASE_URL_API = "http://127.0.0.1:8001/api/"
 
 
 
+# https://www.carqueryapi.com/api/0.3/?callback=?&cmd=getModels&make=audi
+
 class ActionChangeSlot(Action):
 
 
@@ -156,28 +158,28 @@ class ValidateContractForm(FormValidationAction):
     ) -> Optional[List[Text]]:
     
     #print("[SLOTS]", tracker.slots)
-    #print("[LAST_MSG]", tracker.latest_message)
+    print("[LAST_MSG]", tracker.latest_message)
     #print("##########")
-    extra = [
-      "vendor_name", 
-      "vendor_dni",
-      "vendor_address", 
-      "vendor_province",
-      "buyer_name",
-      "buyer_dni",
-      "buyer_address",
-      "buyer_province",
-      "vehicle_brand",
-      "vehicle_plate",
-      "vehicle_chassis_nb",
-      "vehicle_kms",
-      "vehicle_value",
-      "insurance_date",
-      "court",
-      "vendor_signature",
-      "buyer_signature"
-    ]
-    #extra = ["vendor_address"]
+    #extra = [
+    #  "vendor_name", 
+    #  "vendor_dni",
+    #  "vendor_address", 
+    #  "vendor_province",
+    #  "buyer_name",
+    #  "buyer_dni",
+    #  "buyer_address",
+    #  "buyer_province",
+    #  "vehicle_brand",
+    #  "vehicle_plate",
+    #  "vehicle_chassis_nb",
+    #  "vehicle_kms",
+    #  "vehicle_value",
+    #  "insurance_date",
+    #  "court",
+    #  "vendor_signature",
+    #  "buyer_signature"
+    #]
+    extra = ["vehicle_brand"]
     
     return extra + slots_mapped_in_domain
 
@@ -471,10 +473,15 @@ class ValidateContractForm(FormValidationAction):
       return {}
     
     value = None
+    start = None
+    end = None
     entities = tracker.latest_message['entities']
     for entity in entities:
       if entity['entity'] == "brand" and entity['extractor'] == 'RegexEntityExtractor':
         value = entity['value']
+        start = entity['start']
+        end = entity['end']
+
         
     if not value:
       vehicle_brands = ["Abarth", "Alfa Romeo", "Aston Martin", "Audi", "Austin", "Bentley", "Bmw", "Cadillac", "Chevrolet", "Chrysler", "Citroen", "Dacia", "Daewoo", "Daihatsu", "Dodge", "Ferrari", "Fiat", "Ford", "Galloper", "Honda", "Hummer", "Hyundai", "Infiniti", "Isuzu", "Jaguar", "Jeep", "Kia", "Lada", "Lamborghini", "Lancia", "Land Rover", "Lexus", "Lotus", "Maserati", "Mazda", "Mercedes-Benz", "Mercedes", "MG", "Mini", "Mitsubishi", "Nissan", "Opel", "Peugeot", "Pontiac", "Porsche", "Renault", "Rolls-Royce", "Rover", "Saab", "Seat", "Skoda", "Smart", "Ssangyong", "Subaru", "Suzuki", "Talbot", "Tata", "Toyota", "Volkswagen", "Volvo"] 
@@ -488,12 +495,32 @@ class ValidateContractForm(FormValidationAction):
             scores[word]['score'] = distance
             scores[word]['brand'] = brand 
             
-      # Select the lowest
+      # Select the lowest distance and bigger character length
       lowest = 999
       for item, data in scores.items():
         if data['score'] < lowest:
           lowest = data['score']
           value = data['brand']
+          start, end = re.search(item, message).span()
+
+    # Try to grab the model from the text 
+    message = tracker.latest_message['text']
+    # Make car API call
+    headers = { "User-Agent": "PostmanRuntime/7.26.8" }
+    brands = requests.get("https://www.carqueryapi.com/api/0.3/?callback=?&cmd=getModels&make="+value.lower(), headers=headers) 
+    if brands.status_code == 200:
+      brand_data = json.loads(brands.text[2:len(brands.text)-2])["Models"]
+      models = [model['model_name'] for model in brand_data]
+      # Search for a model in the message
+      possible_model = None
+      for model in models:
+        found = re.search(model.replace(" ", "").lower(), message.replace(" ", "").lower())
+        if found:
+          possible_model = model     
+          break
+      
+    if possible_model:
+      value = value + " " + possible_model
 
     tracker.slots['slot_to_change'] = None
     return { "vehicle_brand": value }
