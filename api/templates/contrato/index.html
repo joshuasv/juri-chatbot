@@ -159,6 +159,10 @@
     <script src="{% static 'contrato/component/Canvas.js' %}"></script>
 
     <script>
+      var editBtnImg = "{% static 'contrato/edit.png' %}"
+    </script>
+
+    <script>
       // initialize by constructing a named function...
       // ...and add text processing plugin:
       function makeid() {
@@ -285,7 +289,8 @@
               var editBtn = slot.querySelector(".editBtn");
               if (editBtn === null) {
                 editBtn = document.createElement("editBtn");
-                editBtn.innerHTML = "<div><button id=\"editBtn\" class=\"editBtn\" onClick=\"edit(\'"+key+"\')\">Editar</button></div>"; 
+                //editBtn.innerHTML = "<div><button id=\"editBtn\" class=\"editBtn\" onClick=\"edit(\'"+key+"\')\"><img src=\""+editBtnImg+"\"></button></div>"; 
+                editBtn.innerHTML = "<div><a id=\"editBtn\" class=\"editBtn\" onClick=\"edit(\'"+key+"\')\" style=\"cursor: pointer;\"><img src=\""+editBtnImg+"\"></a></div>"; 
                 slot.insertBefore(editBtn, slot.childNodes[0]); 
               }
               else {
@@ -301,7 +306,6 @@
                 editBtn.style.display = 'none'; 
               }
             }
-            console.log(key, value);
           }
         }
       }      
