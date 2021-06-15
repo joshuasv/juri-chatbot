@@ -34,7 +34,6 @@ def calculate_editdistance(sentence, elements):
       if distance < scores[word]['score']:
         scores[word]['score'] = distance
         scores[word]['data'] = element
-  print(scores)
   # Select the lowest
   lowest = 999 
   for item, data in scores.items():
@@ -181,24 +180,25 @@ class ValidateContractForm(FormValidationAction):
     domain: "DomainDict",
     ) -> Optional[List[Text]]:
     
-    extra = [
-      "vendor_name", 
-      "vendor_dni",
-      "vendor_address", 
-      "vendor_province",
-      "buyer_name",
-      "buyer_dni",
-      "buyer_address",
-      "buyer_province",
-      "vehicle_brand",
-      "vehicle_plate",
-      "vehicle_chassis_nb",
-      "vehicle_kms",
-      "vehicle_value",
-      "insurance_date",
-      "vendor_signature",
-      "buyer_signature"
-    ]
+    #extra = [
+    #  "vendor_name", 
+    #  "vendor_dni",
+    #  "vendor_address", 
+    #  "vendor_province",
+    #  "buyer_name",
+    #  "buyer_dni",
+    #  "buyer_address",
+    #  "buyer_province",
+    #  "vehicle_brand",
+    #  "vehicle_plate",
+    #  "vehicle_chassis_nb",
+    #  "vehicle_kms",
+    #  "vehicle_value",
+    #  "insurance_date",
+    #  "vendor_signature",
+    #  "buyer_signature"
+    #]
+    extra = ["vendor_address"]
    
     return extra + slots_mapped_in_domain
 
@@ -269,14 +269,22 @@ class ValidateContractForm(FormValidationAction):
 
     value = None
     street_number = None
-    
+    closest_st_nb = 999 
     entities = tracker.latest_message['entities']
     for entity in entities:
       if entity['entity'] == "LOC" and entity['extractor'] == "SpacyEntityExtractor":
         value = entity['value']
+        st_name_start = entity['start']
+        st_name_end = entity['end']
       if entity['entity'] == "number" and entity['extractor'] == "DucklingEntityExtractor":
         # Get the closest value to the street name
-        street_number = entity['value']
+        st_nb_start = entity['start']
+        st_nb_end = entity['end']
+        if st_name_end:
+          dist = abs(st_name_end - st_nb_start)
+          if dist < closest_st_nb:
+            closest_st_nb = dist
+            street_number = entity['value']
 
     if not value:
       for entity in entities:
