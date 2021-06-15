@@ -180,25 +180,24 @@ class ValidateContractForm(FormValidationAction):
     domain: "DomainDict",
     ) -> Optional[List[Text]]:
     
-    #extra = [
-    #  "vendor_name", 
-    #  "vendor_dni",
-    #  "vendor_address", 
-    #  "vendor_province",
-    #  "buyer_name",
-    #  "buyer_dni",
-    #  "buyer_address",
-    #  "buyer_province",
-    #  "vehicle_brand",
-    #  "vehicle_plate",
-    #  "vehicle_chassis_nb",
-    #  "vehicle_kms",
-    #  "vehicle_value",
-    #  "insurance_date",
-    #  "vendor_signature",
-    #  "buyer_signature"
-    #]
-    extra = ["vendor_address"]
+    extra = [
+      "vendor_name", 
+      "vendor_dni",
+      "vendor_address", 
+      "vendor_province",
+      "buyer_name",
+      "buyer_dni",
+      "buyer_address",
+      "buyer_province",
+      "vehicle_brand",
+      "vehicle_plate",
+      "vehicle_chassis_nb",
+      "vehicle_kms",
+      "vehicle_value",
+      "insurance_date",
+      "vendor_signature",
+      "buyer_signature"
+    ]
    
     return extra + slots_mapped_in_domain
 
