@@ -45,7 +45,6 @@ class ContractPDF(object):
       .filter(vehicle_kms__isnull=False) \
       .filter(vehicle_value__isnull=False) \
       .filter(insurance_date__isnull=False) \
-      .filter(court__isnull=False) \
       .filter(vendor_signature__isnull=False) \
       .filter(buyer_signature__isnull=False)
    
@@ -91,9 +90,11 @@ class ContractPDF(object):
       try: 
         pdf = doc.build(content)
 
+        print("PDF===>", pdf)
         # Set contract object path field the document filename
         contract_data.path = doc.filename 
         contract_data.save()
+        print("====>", settings.MEDIA_URL + filename)
         
         return settings.MEDIA_URL + filename 
 
@@ -186,7 +187,7 @@ class ContractPDF(object):
     content.append(Paragraph(ptext, styles['Justify']))
     content.append(Spacer(1,10))
 
-    ptext = f'<font size="12"><b>7ª)</b> Para cualquier litigio que surja entre las partes de la interpretación o cumplimiento del presente contrato, éstas, con expresa renuncia al fuero que pudiera corresponderles, se someterán a los Juzgados y Tribunales de {court} </font>'
+    ptext = f'<font size="12"><b>7ª)</b> Para cualquier litigio que surja entre las partes de la interpretación o cumplimiento del presente contrato, éstas, con expresa renuncia al fuero que pudiera corresponderles, se someterán a los Juzgados y Tribunales que corresponda.</font>'
     content.append(Paragraph(ptext, styles['Justify']))
     content.append(Spacer(1,10))
 

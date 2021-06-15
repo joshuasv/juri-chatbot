@@ -152,9 +152,6 @@ actions:
 forms:
   contract_form:
     required_slots:
-      court:
-      - type: from_text
-        not_intent: change_slot
       vendor_signature:
       - type: from_text
         not_intent: change_slot
