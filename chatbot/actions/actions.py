@@ -22,6 +22,30 @@ BASE_URL_API = "http://127.0.0.1:8001/api/"
 
 # https://www.carqueryapi.com/api/0.3/?callback=?&cmd=getModels&make=audi
 
+def calculate_editdistance(sentence, elements):
+  to_ret = None
+  start = None
+  end = None
+  scores = {}
+  for word in sentence.split(" "):
+    scores[word] = { "score": 999, "data": None }
+    for element in elements:
+      distance = editdistance.eval(word.lower(), element.lower())
+      if distance < scores[word]['score']:
+        scores[word]['score'] = distance
+        scores[word]['data'] = element
+  print(scores)
+  # Select the lowest
+  lowest = 999 
+  for item, data in scores.items():
+    if data['score'] < lowest:
+      lowest = data['score']
+      to_ret = data['data']
+      start, end = re.search(item, sentence).span()
+
+  return to_ret, (start, end)
+  
+
 class ActionChangeSlot(Action):
 
 
@@ -40,7 +64,7 @@ class ActionChangeSlot(Action):
     "vehicle_kms": "los kilómetros que tiene el coche",
     "vehicle_price": "el precio de venta del coche",
     "insurance_date": "la fecha de validez del seguro",
-    "court": "los Juzgados y Tribunales"
+    #"court": "los Juzgados y Tribunales"
   }
   
   def name(self):
@@ -157,30 +181,25 @@ class ValidateContractForm(FormValidationAction):
     domain: "DomainDict",
     ) -> Optional[List[Text]]:
     
-    #print("[SLOTS]", tracker.slots)
-    print("[LAST_MSG]", tracker.latest_message)
-    #print("##########")
-    #extra = [
-    #  "vendor_name", 
-    #  "vendor_dni",
-    #  "vendor_address", 
-    #  "vendor_province",
-    #  "buyer_name",
-    #  "buyer_dni",
-    #  "buyer_address",
-    #  "buyer_province",
-    #  "vehicle_brand",
-    #  "vehicle_plate",
-    #  "vehicle_chassis_nb",
-    #  "vehicle_kms",
-    #  "vehicle_value",
-    #  "insurance_date",
-    #  "court",
-    #  "vendor_signature",
-    #  "buyer_signature"
-    #]
-    extra = ["vehicle_brand"]
-    
+    extra = [
+      "vendor_name", 
+      "vendor_dni",
+      "vendor_address", 
+      "vendor_province",
+      "buyer_name",
+      "buyer_dni",
+      "buyer_address",
+      "buyer_province",
+      "vehicle_brand",
+      "vehicle_plate",
+      "vehicle_chassis_nb",
+      "vehicle_kms",
+      "vehicle_value",
+      "insurance_date",
+      "vendor_signature",
+      "buyer_signature"
+    ]
+   
     return extra + slots_mapped_in_domain
 
   def extract_vendor_name(
@@ -256,7 +275,9 @@ class ValidateContractForm(FormValidationAction):
       if entity['entity'] == "LOC" and entity['extractor'] == "SpacyEntityExtractor":
         value = entity['value']
       if entity['entity'] == "number" and entity['extractor'] == "DucklingEntityExtractor":
+        # Get the closest value to the street name
         street_number = entity['value']
+
     if not value:
       for entity in entities:
         if entity['entity'] == "PER" and entity['extractor'] == "SpacyEntityExtractor":
@@ -282,8 +303,9 @@ class ValidateContractForm(FormValidationAction):
       if re.compile(r"^[Bb]ajo$").match(word):
         bajo = "Bajo"
     # Check if it has floor
-    if re.compile(floor).match(tracker.latest_message['text']):
-      piso = re.compile(floor).match(tracker.latest_message['text']).group() 
+    check_floor = re.compile(floor).search(tracker.latest_message['text']) 
+    if check_floor != None:
+      piso = check_floor.group()   
     
     if street_number:
       address = f"{value}, {street_number}"
@@ -323,21 +345,7 @@ class ValidateContractForm(FormValidationAction):
     if not value:
       provinces = ["Coruña", "Álava", "Albacete", "Alicante", "Almería", "Asturias", "Ávila", "Badajoz", "Baleares", "Barcelona", "Burgos", "Cáceres", "Cádiz", "Cantabria", "Castellón", "Ciudad Real", "Córdoba", "Cuenca", "Girona", "Granada", "Guadalajara", "Gipuzkoa", "Huelva", "Huesca", "Jaén", "La Rioja", "Las Palmas", "León", "Lérida", "Lugo", "Madrid", "Málaga", "Murcia", "Navarra", "Ourense", "Palencia", "Pontevedra", "Salamanca", "Segovia", "Sevilla", "Soria", "Tarragona", "Santa Cruz de Tenerife", "Teruel", "Toledo", "Valencia", "Valladolid", "Vizcaya", "Zamora", "Zaragoza", "Ceuta", "Melilla"]
       message = tracker.latest_message['text']
-      scores = {}
-      for word in message.split(" "):
-        scores[word] = {"score": 999, "prov": None}
-        for prov in provinces:
-          distance = editdistance.eval(word.lower(), prov.lower())
-          if distance < scores[word]['score']:
-            scores[word]['score'] = distance
-            scores[word]['prov'] = prov
-            
-      # Select the lowest
-      lowest = 999
-      for item, data in scores.items():
-        if data['score'] < lowest:
-          lowest = data['score']
-          value = data['prov']
+      value, _ = calculate_editdistance(message, provinces)
 
     tracker.slots['slot_to_change'] = None
     return { "vendor_province": value }
@@ -441,21 +449,7 @@ class ValidateContractForm(FormValidationAction):
     if not value:
       provinces = ["Coruña", "Álava", "Albacete", "Alicante", "Almería", "Asturias", "Ávila", "Badajoz", "Baleares", "Barcelona", "Burgos", "Cáceres", "Cádiz", "Cantabria", "Castellón", "Ciudad Real", "Córdoba", "Cuenca", "Girona", "Granada", "Guadalajara", "Gipuzkoa", "Huelva", "Huesca", "Jaén", "La Rioja", "Las Palmas", "León", "Lérida", "Lugo", "Madrid", "Málaga", "Murcia", "Navarra", "Ourense", "Palencia", "Pontevedra", "Salamanca", "Segovia", "Sevilla", "Soria", "Tarragona", "Santa Cruz de Tenerife", "Teruel", "Toledo", "Valencia", "Valladolid", "Vizcaya", "Zamora", "Zaragoza", "Ceuta", "Melilla"]
       message = tracker.latest_message['text']
-      scores = {}
-      for word in message.split(" "):
-        scores[word] = {"score": 999, "prov": None}
-        for prov in provinces:
-          distance = editdistance.eval(word.lower(), prov.lower())
-          if distance < scores[word]['score']:
-            scores[word]['score'] = distance
-            scores[word]['prov'] = prov
-            
-      # Select the lowest
-      lowest = 999
-      for item, data in scores.items():
-        if data['score'] < lowest:
-          lowest = data['score']
-          value = data['prov']
+      value, _ = calculate_editdistance(message, provinces)
 
     tracker.slots['slot_to_change'] = None
     return { "buyer_province": value }
@@ -474,7 +468,7 @@ class ValidateContractForm(FormValidationAction):
     
     value = None
     start = None
-    end = None
+    end = 0 
     entities = tracker.latest_message['entities']
     for entity in entities:
       if entity['entity'] == "brand" and entity['extractor'] == 'RegexEntityExtractor':
@@ -486,25 +480,10 @@ class ValidateContractForm(FormValidationAction):
     if not value:
       vehicle_brands = ["Abarth", "Alfa Romeo", "Aston Martin", "Audi", "Austin", "Bentley", "Bmw", "Cadillac", "Chevrolet", "Chrysler", "Citroen", "Dacia", "Daewoo", "Daihatsu", "Dodge", "Ferrari", "Fiat", "Ford", "Galloper", "Honda", "Hummer", "Hyundai", "Infiniti", "Isuzu", "Jaguar", "Jeep", "Kia", "Lada", "Lamborghini", "Lancia", "Land Rover", "Lexus", "Lotus", "Maserati", "Mazda", "Mercedes-Benz", "Mercedes", "MG", "Mini", "Mitsubishi", "Nissan", "Opel", "Peugeot", "Pontiac", "Porsche", "Renault", "Rolls-Royce", "Rover", "Saab", "Seat", "Skoda", "Smart", "Ssangyong", "Subaru", "Suzuki", "Talbot", "Tata", "Toyota", "Volkswagen", "Volvo"] 
       message = tracker.latest_message['text']
-      scores = {}
-      for word in message.split(" "):
-        scores[word] = {"score": 999, "brand": None}
-        for brand in vehicle_brands:
-          distance = editdistance.eval(word.lower(), brand.lower())
-          if distance < scores[word]['score']:
-            scores[word]['score'] = distance
-            scores[word]['brand'] = brand 
-            
-      # Select the lowest distance and bigger character length
-      lowest = 999
-      for item, data in scores.items():
-        if data['score'] < lowest:
-          lowest = data['score']
-          value = data['brand']
-          start, end = re.search(item, message).span()
-
+      value, (start, end) = calculate_editdistance(message, vehicle_brands)
+      
     # Try to grab the model from the text 
-    message = tracker.latest_message['text']
+    message = tracker.latest_message['text'][end:]
     # Make car API call
     headers = { "User-Agent": "PostmanRuntime/7.26.8" }
     brands = requests.get("https://www.carqueryapi.com/api/0.3/?callback=?&cmd=getModels&make="+value.lower(), headers=headers) 
@@ -518,6 +497,9 @@ class ValidateContractForm(FormValidationAction):
         if found:
           possible_model = model     
           break
+      # If not model found try find one with closest distance
+      if not possible_model:
+        possible_model, _ = calculate_editdistance(message, models)
       
     if possible_model:
       value = value + " " + possible_model
